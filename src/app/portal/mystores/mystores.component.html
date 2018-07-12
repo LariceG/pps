@@ -1,0 +1,33 @@
+<app-pheader></app-pheader>
+<div class="app-body">
+  <app-psidebar *ngIf="token" [token]="token"></app-psidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard/my-stores"></a>Dashboard</li>
+      <li class="breadcrumb-item active">My stores</li>
+    </ol>
+    <div class="container-fluid">
+      <div class="">
+        <div class="">
+          <table class="table">
+            <tr>
+              <th>Store Id</th>
+              <th>Store name</th>
+              <th>Store email</th>
+              <th>Store Mobile</th>
+              <th>Store city</th>
+            </tr>
+            <tr *ngFor="let str of Stores">
+              <td>{{str.storeId}}</td>
+              <td>{{str.storeName}}</td>
+              <td>{{str.storeEmail}}</td>
+              <td>{{str.storeMobile}}</td>
+              <td>{{str.storeCity}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>

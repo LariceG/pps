@@ -1,0 +1,128 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <toaster-container></toaster-container>
+
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">List Products</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="">
+            <div style="margin-bottom:10px">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for products" [(ngModel)]="searchText" (keyup)="Search()">
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              Products
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th colspan="2">Action</th>
+                  </tr>
+                  <tr *ngFor="let pro of Products | paginate: { itemsPerPage: perpage, currentPage: page, totalItems: totalItem }">
+                    <td>
+                      <img style="width:100px" [src]="pro.productImage == '' ? 'assets/img/demo.png' : 'https://productprotectionsolutions.com/order/api/assets/uploads/catPics/'+pro.productImage" alt="">
+                    </td>
+                    <td>{{ pro.productName}}</td>
+                    <td>{{ pro.catName}}</td>
+                    <td>{{ pro.productPrice}}</td>
+                    <td>
+                      <a (click)="inventory(pro.productID)" class="fa fa-building icon-btn"></a>
+                      <a (click)="ProductDeleteConfirm(pro.productID)" class="fa fa-remove icon-btn"></a>
+                      <a (click)="editProduct(pro.productID)" class="fa fa-edit icon-btn"></a>
+                      <select class="icon-btn form-control sel" [(ngModel)]="pro.IsAvailable" (change)="productStatus(pro.productID,pro.IsAvailable,'productStockStatus','IsAvailable')">
+                        <option value="1">Out of Stock</option>
+                        <option value="0">Available</option>
+                      </select>
+                    </td>
+                    <button type="button" name="button" class="btn btn-primary" *ngIf="pro.IsActive == 1" (click)="productStatus(pro.productID,0,'ProductIsAactive','IsActive')">Active</button>
+                    <button type="button" name="button" class="btn btn-default" *ngIf="pro.IsActive == 0" (click)="productStatus(pro.productID,1,'ProductIsAactive','IsActive')">Inactive</button>
+                    <!-- <td>
+                    </td> -->
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+          <pagination-controls (pageChange)="page = getProducts($event)" maxSize="9" directionLinks="true" autoHide="true" previousLabel="Prev" nextLabel="Next" screenReaderPaginationLabel="Pagination" screenReaderPageLabel="page" screenReaderCurrentLabel="You're on page">
+          </pagination-controls>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2>Are you sure?</h2>
+        <br><br>
+        <button (click)="deleteProduct()" type="button" name="button" class="btn btn-primary">Yes</button>
+        <button data-dismiss="modal" type="button" name="button" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        Update Category
+      </div>
+      <div class="modal-body">
+        <app-product-edit (onSuccess)="handleProductUpdate($event)" *ngIf="ProductEdit" [ProductToEdit]="ProductToEdit"></app-product-edit>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="invModal">
+  <div class="modal-dialog" style="max-width: 650px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        Product Quantities
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tr>
+            <th style="">Item Id</th>
+            <th>Item Description</th>
+            <th style="">Item Price</th>
+            <th style="width:80px">Quantity</th>
+          </tr>
+          <tr *ngFor="let inv of selectedProdForInv.productVariations">
+            <td>{{ inv.productVarItemId }}</td>
+            <td>{{ inv.productVarDesc }}</td>
+            <td>{{ inv.productVarPrice }}</td>
+            <td>
+              <input type="text" [(ngModel)]="inv.productVarItemQuantity" class="form-control">
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateInventory()">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

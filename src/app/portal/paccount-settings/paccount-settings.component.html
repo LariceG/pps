@@ -1,0 +1,61 @@
+<toaster-container></toaster-container>
+<app-pheader></app-pheader>
+<div class="app-body">
+  <app-psidebar *ngIf="token" [token]="token"></app-psidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard/my-stores"></a>Dashboard</li>
+      <li class="breadcrumb-item active">My stores</li>
+    </ol>
+    <div class="container-fluid">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Change password
+          </div>
+          <div class="card-body">
+            <form class="m-t" [formGroup]="account" (ngSubmit)="onSubmit(account.value,account)">
+              <div>
+                <div class="form-group" [ngClass]="{'has-error':!account.controls['current_password'].valid && submitAttempt || account.controls['current_password'].hasError('required') && account.controls['current_password'].touched}">
+                  <input type="password" class="form-control" placeholder="Old Password" formControlName="current_password">
+                  <!-- <div class="input-group col-md-12 password-watch">
+                      <span class="input-group-addon" (click)="showPassword($event.target)">
+                        Show
+                      </span>
+                    </div> -->
+                     <span *ngIf="account.controls['current_password'].hasError('required') && submitAttempt || account.controls['current_password'].hasError('required') && account.controls['current_password'].touched">Old Password is required.</span>
+                    <span *ngIf="account.controls['current_password'].hasError('minlength') && submitAttempt">Minimum 6 characters required.</span>
+                 </div>
+               <div class="form-group" [ngClass]="{'has-error':!account.controls['password'].valid && submitAttempt || account.controls['password'].hasError('required') && account.controls['password'].touched}">
+                 <input type="password" class="form-control" placeholder="New Password" formControlName="password">
+                 <!-- <div class="input-group col-md-12 password-watch">
+                   <span class="input-group-addon" (click)="showPassword($event.target)">
+                     Show
+                   </span>
+                 </div> -->
+                    <span *ngIf="account.controls['password'].hasError('required') && submitAttempt || account.controls['password'].hasError('required') && account.controls['password'].touched">New Password is required.</span>
+                    <span *ngIf="account.controls['password'].hasError('minlength') && submitAttempt">Minimum 6 characters required.</span>
+                </div>
+                <div class="form-group" [ngClass]="{ 'has-error':!account.controls['user_password_rpt'].valid   && submitAttempt || account.controls['user_password_rpt'].hasError('required') && account.controls['user_password_rpt'].touched}">
+                  <input type="password" class="form-control" placeholder="Confirm Password" formControlName="user_password_rpt">
+                  <!-- <div class="input-group col-md-12 password-watch">
+                    <span class="input-group-addon" (click)="showPassword($event.target)">
+                      Show
+                    </span>
+                  </div> -->
+                    <span *ngIf="account.controls['user_password_rpt'].hasError('required') && submitAttempt || account.controls['user_password_rpt'].hasError('required') && account.controls['user_password_rpt'].touched">Confirm Password is required.</span>
+                    <!-- <span *ngIf="!account.controls['user_password_rpt'].hasError('required') && !account.controls['user_password_rpt'].hasError('minlength')  && !account.controls.valid && submitAttempt">Password not matched.</span> -->
+                    <span *ngIf="!account.controls['password'].hasError('required') && !account.controls['user_password_rpt'].hasError('required') && !account.controls['password'].hasError('minlength')   && !account.controls['user_password_rpt'].hasError('minlength') && !account.valid && submitAttempt">Password not matched.</span>
+                </div>
+                <div>
+                  <button class="btn btn-primary">Change Password</button>
+                </div>
+          </div>
+        </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>

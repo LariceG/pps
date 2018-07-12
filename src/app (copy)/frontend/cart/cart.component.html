@@ -1,0 +1,149 @@
+<toaster-container></toaster-container>
+<header class="app-header navbar">
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#"></a>
+  <!-- <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button> -->
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+      <a hand class="nav-link" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+    </li>
+    <!-- <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="img/avatars/6.jpg" class="img-avatar" alt="Admin">
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+      </div>
+    </li> -->
+  </ul>
+  <button class="navbar-toggler aside-menu-toggler" type="button">
+    <!-- <span class="navbar-toggler-icon"></span> -->
+  </button>
+</header>
+
+<div class="app-body">
+  <div class="sidebar" style="height:600px;">
+    <nav class="sidebar-nav">
+      <ul class="nav">
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard"><i class="icon-speedometer"></i> Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Shop</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 2">
+          <a class="nav-link" routerLink="/profile/orders"><i class="icon-speedometer"></i> Orders</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard/my-stores"><i class="icon-speedometer"></i> My Stores</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard/orders/my"><i class="icon-speedometer"></i> My Orders</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard/orders/stores"><i class="icon-speedometer"></i> Orders by stores</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 2">
+          <a class="nav-link" routerLink="/profile/cart"><i class="icon-basket"></i> Cart</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard/cart"><i class="icon-basket"></i> Cart</a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 2">
+          <a class="nav-link" routerLink="/profile/settings"><i class="icon-speedometer"></i> Account settings </a>
+        </li>
+        <li class="nav-item" *ngIf="token.userType == 3">
+          <a class="nav-link" routerLink="/dashboard/account-settings"><i class="icon-speedometer"></i> Account settings </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" *ngIf="token.userType == 2"> <a routerLink="/profile">Profile</a></li>
+      <li class="breadcrumb-item" *ngIf="token.userType == 3"> <a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item active">Cart</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row">
+    <div *ngIf="ProductLoading">
+      <div class="loader">
+        <div class="loader-inner ball-pulse">
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" style="background-color:#fff;">
+      <div *ngIf="!ProductLoading && (cartData | json) == '{}' " class="text-center" style="padding:30px">
+        <i class="fa fa-shopping-cart fa-4x"></i>
+        <br>
+        <h1> Cart is Empty</h1>
+        <a routerLink="/products">Shop Now</a>
+      </div>
+      <div *ngIf="!ProductLoading && (cartData | json) != '{}' ">
+        <div class="col-md-3" *ngIf="token.userType == 3">
+          <select class="form-control whichStore" [(ngModel)]="whichStore">
+            <option value="">Select Store</option>
+            <option *ngFor="let str of Stores" [value]="str.storeUserId">{{ str.storeName }}</option>
+          </select>
+          <br>
+        </div>
+        <table id="cart" class="table table-hover table-condensed">
+              <thead>
+              <tr>
+                <th style="width:50%">Product</th>
+                <th style="width:10%">Price</th>
+                <th style="width:8%">Quantity</th>
+                <th style="width:22%" class="text-center">Subtotal</th>
+                <th style="width:10%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pro of cartData.data; let i = index">
+                <td data-th="Product">
+                  <div class="row">
+                    <div class="col-sm-2 hidden-xs">
+                      <img [src]="pro.productImage != '' ? 'https://productprotectionsolutions.com/order/api/assets/uploads/catPics/'+pro.productImage : 'assets/img/demo.png'" alt="" class="img-responsive" style="width:80px"/>
+                    </div>
+                    <div class="col-sm-10">
+                      <h4 class="nomargin">{{ pro.productName }}</h4>
+                      <!-- <p>{{ pro.productDescription }}</p> -->
+                    </div>
+                  </div>
+                </td>
+                <td data-th="Price">${{ pro.productPrice }}</td>
+                <td data-th="Quantity">
+                  <input type="number" class="form-control text-center" [(ngModel)]="pro.quantity" (change)="doSum(i)" min="1">
+                </td>
+                <td data-th="Subtotal" class="text-center">${{ pro.orderProductPrice }}</td>
+                <td class="actions" data-th="">
+                  <button class="btn btn-danger btn-sm" (click)="delete(pro.bkId,'cartItem')"><i class="fa fa-trash-o"></i></button>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td><a routerLink="/products" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
+                <td colspan="2" class="hidden-xs"></td>
+                <td class="hidden-xs text-center"><strong>Total ${{ cartData.totalItemPrice}}</strong></td>
+                <td><a (click)="SaveMyOrders()" class="btn btn-success btn-block">Place Order <i class="fa fa-angle-right"></i></a></td>
+              </tr>
+            </tfoot>
+        </table>
+      </div>
+      <div class="clearfix">
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</main>

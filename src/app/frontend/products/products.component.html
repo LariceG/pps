@@ -1,0 +1,64 @@
+<app-header></app-header>
+<br><br>
+<div class="container">
+  <div class="row">
+    <div *ngIf="Products.length == 0 && ProductLoading">
+      <div class="loader">
+        <div class="loader-inner ball-pulse">
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <tree-root [nodes]="nodes" #tree  (stateChange)="setState($event)" ></tree-root>
+      <!-- <ol class="list-group">
+        <li class="list-group-item" (click)="getCatTable('all','parentCats')">All Categories</li>
+        <li class="list-group-item" (click)="openMore(cat.hasChild,cat.catId)" *ngFor="let cat of ParentCats">{{ cat.catName }}</li>
+      </ol> -->
+    </div>
+    <div class="col-md-9">
+      <div style="margin-bottom:10px">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search for products" [(ngModel)]="searchText" (keyup)="Search()">
+        </div>
+      </div>
+      <!-- <div class="row" *ngIf="Show == 'cats'">
+        <div class="col-md-3" *ngFor="let cat of ParentCats">
+          <div class="card" (click)="openMore(cat.hasChild,cat.catId)">
+            <img class="card-img-top" [src]="cat.catImage != '' ? 'https://productprotectionsolutions.com/order/api/assets/uploads/catPics/'+cat.catImage : 'assets/img/demo.png'">
+            <div class="card-body">
+              <h3 class="card-title">{{cat.catName}}</h3>
+            </div>
+          </div>
+        </div>
+      </div> -->
+      <div class="row" *ngIf="Products.length == 0 && !ProductLoading">
+        No products found
+      </div>
+      <div class="row" *ngIf=" Products.length != 0">
+        <div class="col-md-4" *ngFor="let pro of Products | paginate: { itemsPerPage: perpage, currentPage: page, totalItems: totalItem }">
+            <div class="card">
+              <a [routerLink]="['/product-details',pro.productID]">
+                <img style="height: 192px;" class="card-img-top" [src]="pro.productImage == '' ? 'assets/img/demo.png' : 'https://productprotectionsolutions.com/order/api/assets/uploads/catPics/'+pro.productImage" alt="">
+              </a>
+              <div class="card-body">
+                <h4 class="card-title">{{pro.productName}}</h4>
+                <p class="card-text">{{pro.catName}}</p>
+                <p class="card-text" *ngIf="LoggedIn">{{pro.productPrice}}</p>
+                <a [routerLink]="['/product-details',pro.productID,page]" class="btn btn-primary">View</a>
+                <!-- <a (click)="addToCart(pro.productID)" class="btn btn-primary">Add to cart</a> -->
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf=" Products.length != 0">
+        <div class="col-md-12">
+          <pagination-controls #pagi (pageChange)="page = getProducts($event)" maxSize="9" directionLinks="true" autoHide="true" previousLabel="Prev" nextLabel="Next" screenReaderPaginationLabel="Pagination" screenReaderPageLabel="page" screenReaderCurrentLabel="You're on page">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

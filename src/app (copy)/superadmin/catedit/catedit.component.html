@@ -1,0 +1,38 @@
+<form [formGroup]="updateCat" (ngSubmit)="submitCat(updateCat.value)" *ngIf="catDetails != '{}'">
+  <div class="form-group" [ngClass]="{'has-error':!updateCat.controls['catName'].valid   && catSubmission}">
+    <label for="">Category name</label>
+    <input type="text" class="form-control" placeholder="Category Name" formControlName="catName" [(ngModel)]="catDetails.catName">
+  </div>
+  <div class="form-group" [ngClass]="{'has-error':!updateCat.controls['catParent'].valid   && catSubmission}">
+    <label for="">Parent category</label>
+    <select class="form-control" formControlName="catParent" [(ngModel)]="catDetails.catParent">
+      <option [selected]="true" value="0">None</option>
+      <option [ngClass]="'lev'+cat.catLevel" *ngFor="let cat of CatList" [value]="cat.catId">
+        <span *ngIf="cat.catLevel == 1"> &nbsp;&nbsp; </span>
+        <span *ngIf="cat.catLevel == 2"> &nbsp;&nbsp;&nbsp; </span>
+        <span *ngIf="cat.catLevel == 3"> &nbsp;&nbsp;&nbsp;&nbsp; </span>
+        {{ cat.catName }}
+      </option>
+    </select>
+  </div>
+  <div class="form-group" [ngClass]="{'has-error':!updateCat.controls['catDescription'].valid   && catSubmission}">
+    <label for="">Description</label>
+    <textarea class="form-control" rows="2" cols="80" formControlName="catDescription" [(ngModel)]="catDetails.catDescription"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="">Category Image</label>
+    <div class="img_brow img-thumbnail" *ngIf="!showImageUploading">
+      <img [src]="catDetails.catImage != '' ? 'https://productprotectionsolutions.com/order/api/assets/uploads/catPics/'+catDetails.catImage : 'assets/img/demo.png'" alt="" class="img-thumbnail">
+      <div class="fafa_icon">
+        <i class="fa fa-camera" aria-hidden="true"></i>
+        <input #fileInput type="file" (change)="uploadCatImage($event)" accept="image/*"  title=" "/>
+      </div>
+    </div>
+    <div class="img_brow img-thumbnail imageuploadingLoader" *ngIf="showImageUploading">
+      <img src="assets/img/loading.gif" alt="" class="img-thumbnail">
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="submit" value="Submit">
+  </div>
+</form>

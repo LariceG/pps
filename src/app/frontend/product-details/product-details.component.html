@@ -1,0 +1,92 @@
+<app-header></app-header>
+<toaster-container></toaster-container>
+<br><br>
+<div class="container">
+  <div class="row">
+    <div *ngIf="(ProductDetails | json) == '{}'">
+      <div class="loader">
+        <div class="loader-inner ball-pulse">
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+          <div class="my-loader"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="(ProductDetails | json) != '{}'">
+    <div class="preview col-md-4">
+
+      <div class="preview-pic tab-content">
+        <div class="tab-pane active" id="pic-1">
+          <img [src]="productImagePath" style="max-width: 100%;" />
+        </div>
+      </div>
+      <!-- <ul class="preview-thumbnail nav nav-tabs">
+        <li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
+        <li><a data-target="#pic-2" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
+        <li><a data-target="#pic-3" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
+        <li><a data-target="#pic-4" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
+        <li><a data-target="#pic-5" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
+      </ul> -->
+
+    </div>
+    <div class="details col-md-6">
+      <h3 class="product-title">{{ ProductDetails.productName }}</h3>
+      <!-- <div class="rating">
+        <div class="stars">
+          <span class="fa fa-star checked"></span>
+          <span class="fa fa-star checked"></span>
+          <span class="fa fa-star checked"></span>
+          <span class="fa fa-star"></span>
+          <span class="fa fa-star"></span>
+        </div>
+        <span class="review-no">41 reviews</span>
+      </div> -->
+      <p class="product-description" [innerHtml]=" ProductDetails.productDescription | safeHtml ">
+        <!-- <div >
+        </div> -->
+      </p>
+      <h4 class="price" *ngIf="LoggedIn">Current price: <span>$ {{ ProductDetails.productPrice }} </span></h4>
+      <p class="vote" *ngIf="ProductDetails.productVariations">This product has <strong>{{variationCount}}</strong> Variations</p>
+      <p class="vote"><strong>{{ChoosedVariationQuantity}}</strong> Items in Stock</p>
+      <div class="action">
+        <div class="btn-group dropdown">
+          <div class="dropdown" style="margin-right:10px" *ngIf="ProductDetails.productVariations">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ ChoosedVariationname }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" [class.active]="ChoosedVariation == varr.productVarID" *ngFor="let varr of ProductDetails.productVariations; let i = index ;" (click)="choooseVariation(varr.productVarID,varr.productVarItemId,i)" >{{ varr.productVarItemId }}</a>
+            </div>
+          </div>
+          <br>
+          <input *ngIf="LoggedIn" type="number" class="form-control" style="margin-right: 10px; width: 66px" [(ngModel)]="quantity" min="1">
+          <button *ngIf="LoggedIn && (ProductDetails.IsAvailable == 0 && ChoosedVariationQuantity != 0)" class="add-to-cart btn btn-primary" (click)="addToCart(ProductDetails.productID)" type="button">add to cart</button>
+          <a *ngIf=" ProductDetails.IsAvailable == 1 || ChoosedVariationQuantity == 0" style="font-size: 18px; color: red; padding-top: 6px;">Out of stock</a>
+        </div>
+        <div class="clearfix">
+          &nbsp;
+        </div>
+        <p class="vote" *ngIf="ProductDetails.instructionFile != '' && ProductDetails.instructionFile != null"><a  target="_blank" [href]="ProductDetails.instructionFile">Download Instruction Files</a></p>
+      </div>
+      <div class="clearfix">
+        &nbsp;
+      </div>
+      <div *ngIf="ProductDetails.productVariations">
+        <table class="table table-bordered">
+          <tr>
+            <th>Item ID</th>
+            <th>Description</th>
+            <th>Price</th>
+          </tr>
+          <tr *ngFor="let varr of ProductDetails.productVariations; let i = index ;">
+            <td>{{varr.productVarItemId}}</td>
+            <td>{{varr.productVarDesc}}</td>
+            <td>${{varr.productVarPrice}}</td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</div>

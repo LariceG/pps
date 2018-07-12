@@ -1,0 +1,84 @@
+<div class="sidebar" style="height:600px;">
+  <nav class="sidebar-nav">
+    <ul class="nav">
+      <li class="nav-item" *ngIf="token.userType == 3 || token.userType == 4 || token.userType == 9">
+        <a class="nav-link" routerLink="/dashboard"><i class="icon-speedometer"></i> Dashboard</a>
+      </li>
+      <!-- <li class="nav-item">
+        <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Products</a>
+      </li> -->
+      <li class="nav-item" *ngIf="token.userType == 3 || token.userType == 9">
+        <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Shop</a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 3  || token.userType == 9">
+        <a class="nav-link" routerLink="/dashboard/my-stores"><i class="icon-speedometer"></i> My Stores</a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 3 || token.userType == 9">
+        <a class="nav-link" routerLink="/dashboard/orders/my"><i class="icon-speedometer"></i> My Orders</a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 3  || token.userType == 9">
+        <a class="nav-link" routerLink="/dashboard/orders/stores"><i class="icon-speedometer"></i> Orders by stores</a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 3 || token.userType == 9">
+        <a class="nav-link" routerLink="/dashboard/cart"><i class="icon-basket"></i> Cart</a>
+      </li>
+
+      <li class="nav-item" *ngIf="token.userType == 4">
+        <a class="nav-link" routerLink="/dashboard/list-apls"><i class="icon-speedometer"></i> List APLS </a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 4">
+        <a class="nav-link" routerLink="/dashboard/orders/apl"><i class="icon-speedometer"></i> Orders by APLS </a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 4">
+        <a class="nav-link" routerLink="/dashboard/orders/approved"><i class="icon-speedometer"></i> Approved Orders </a>
+      </li>
+      <li class="nav-item" *ngIf="token.userType == 4">
+        <a class="nav-link" routerLink="/dashboard/orders/pending"><i class="icon-speedometer"></i> Pending Orders </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/dashboard/account-settings"><i class="icon-speedometer"></i> Account settings </a>
+      </li>
+
+      <!-- <li class="nav-title">
+        UI Elements
+      </li> -->
+      <!-- <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-puzzle"></i> Products</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/categories"><i class="icon-star"></i> Categories</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-product"><i class="icon-star"></i> Add Product</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-products"><i class="icon-star"></i> List Products</a>
+          </li>
+        </ul>
+      </li> -->
+      <!-- <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-star"></i> Stores</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-stores"><i class="icon-star"></i> List Stores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-store"><i class="icon-star"></i> Add a new store</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/new-stores-access-requests"><i class="icon-star"></i> New store requests</a>
+          </li>
+        </ul>
+      </li> -->
+      <!-- <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-star"></i> APDMS</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-apdms"><i class="icon-star"></i> Add APDMS</a>
+          </li>
+        </ul>
+      </li> -->
+    </ul>
+  </nav>
+  <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+</div>

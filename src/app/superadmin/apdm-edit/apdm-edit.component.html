@@ -1,0 +1,61 @@
+
+          <form [formGroup]="apdmForm" (ngSubmit)="updateAdpm(apdmForm.value)">
+            <div class="row">
+              <div class="form-group col-md-6" [ngClass]="{'has-error':!apdmForm.controls['apdmFirstName'].valid   && apdmSubmission}">
+                <label for="company">apl First name</label>
+                <input class="form-control" id="company" placeholder="Enter apl first name" type="text" formControlName="apdmFirstName" [(ngModel)]="apdmDetails.apdmFirstName">
+              </div>
+              <div class="form-group col-md-6" [ngClass]="{'has-error':!apdmForm.controls['apdmLastName'].valid   && apdmSubmission}">
+                <label for="company">apl Last name</label>
+                <input class="form-control" id="company" placeholder="Enter apl first name" type="text" formControlName="apdmLastName" [(ngModel)]="apdmDetails.apdmLastName">
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="form-group col-md-6" [ngClass]="{'has-error':!apdmForm.controls['apdmEmail'].valid   && apdmSubmission}">
+                <label for="vat">apl email</label>
+                <input class="form-control" id="vat" placeholder="Enter apl email" type="text" formControlName="apdmEmail" [(ngModel)]="apdmDetails.apdmEmail">
+                <span class="text-danger" *ngIf="apdmForm.controls['apdmEmail'].hasError('email') && apdmSubmission">Enter Valid Email</span>
+              </div>
+              <div class="form-group col-md-6" [ngClass]="{'has-error':!apdmForm.controls['apdmMobileNo'].valid   && apdmSubmission}">
+                <label for="vat">apl Mobile</label>
+                <input class="form-control" id="vat" placeholder="Enter apl Mobile" type="text" formControlName="apdmMobileNo" [(ngModel)]="apdmDetails.apdmMobileNo">
+                <span  class="text-danger" *ngIf="apdmForm.controls['userPassword'].hasError('pattern') && apdmSubmission">Enter Valid mobile number</span>
+              </div>
+            </div>
+
+            <div class="form-group" [ngClass]="{'has-error':!apdmForm.controls['apdmAddress'].valid   && apdmSubmission}">
+              <label for="street">apl address</label>
+              <textarea class="form-control" placeholder="Enter apl address" formControlName="apdmAddress" rows="2" cols="80" [(ngModel)]="apdmDetails.apdmAddress"></textarea>
+            </div>
+
+            <div class="row">
+
+              <div class="form-group col-sm-12" [ngClass]="{'has-error':!apdmForm.controls['apdmCity'].valid   && apdmSubmission}">
+                <label for="city">apl city</label>
+                <input class="form-control" id="city" placeholder="Enter apl city" type="text" formControlName="apdmCity" [(ngModel)]="apdmDetails.apdmCity">
+              </div>
+
+            </div>
+          <!--/.row-->
+
+          <div class="">
+            <label for="">
+              <input (change)="ShowCredendtials()" type="checkbox" name="" value="">
+              <b style="vertical-align: super">Credentials</b>
+            </label>
+          </div>
+
+            <div class="row" *ngIf="isCredentials">
+              <div class="form-group col-md-6" [ngClass]="{'has-error':!apdmForm.controls['userPassword'].valid   && apdmSubmission}">
+                <label for="country">Password</label>
+                <input class="form-control" id="country" placeholder="Enter password" type="text" formControlName="userPassword">
+                <span  class="text-danger" *ngIf="apdmForm.controls['userPassword'].hasError('min') && apdmSubmission">Password length must be 6</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <input type="submit" value="Update apl" class="btn btn-primary">
+            </div>
+          </form>

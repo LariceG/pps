@@ -1,0 +1,32 @@
+
+<ng2-completer inputClass="form-control"  [ngModelOptions]="{standalone: true}" [(ngModel)]="searchContact" [datasource]="dataService" [minSearchLength]="0" (selected)="StrSelected($event)" [clearSelected]="true" placeholder="Search store names"></ng2-completer>
+<br><br><br>
+
+<label for=""><b>Assigned Stores</b></label>
+<div class="tag-list">
+  <a *ngFor="let asgn of AssignedStores">{{ asgn.storeName }} <span (click)="removeAsignStore(asgn.asgnId)"> &times; </span></a>
+</div>
+
+<div class="modal fade" id="assignment">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1> Store Assign Confirmation</h1>
+        <button type="button" name="button" class="btn btn-primary">Yes</button>
+        <button type="button" name="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1> Store Assign Confirmation</h1>
+        <button type="button" name="button" class="btn btn-primary">Yes</button>
+        <button type="button" name="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>

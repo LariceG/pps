@@ -1,0 +1,66 @@
+<form *ngIf="!storeDetailsLoading" [formGroup]="updateStore" (ngSubmit)="submitStoreForm(updateStore.value)">
+  <div class="form-group" [ngClass]="{'has-error':!updateStore.controls['storeName'].valid   && storeUpdateTrue}">
+    <label for="company">Store name</label>
+    <input class="form-control" id="company" placeholder="Enter Store name" type="text" formControlName="storeName" [(ngModel)]="storeDetails.storeName">
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-6" [ngClass]="{'has-error':!updateStore.controls['storeEmail'].valid   && storeUpdateTrue}">
+      <label for="vat">Store email</label>
+      <input class="form-control" id="vat" placeholder="Enter Store email" type="text" formControlName="storeEmail"  [(ngModel)]="storeDetails.storeEmail">
+    </div>
+    <div class="form-group col-md-6" [ngClass]="{'has-error':!updateStore.controls['storeMobile'].valid   && storeUpdateTrue}">
+      <label for="vat">Store Mobile</label>
+      <input class="form-control" id="vat" placeholder="Enter Store Mobile" type="text" formControlName="storeMobile"  [(ngModel)]="storeDetails.storeMobile">
+    </div>
+  </div>
+
+  <div class="form-group" [ngClass]="{'has-error':!updateStore.controls['storeAddress'].valid   && storeUpdateTrue}">
+    <label for="street">Store address</label>
+    <textarea class="form-control" placeholder="Enter Store address" formControlName="storeAddress" rows="2" cols="80" [(ngModel)]="storeDetails.storeAddress"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-sm-12" [ngClass]="{'has-error':!updateStore.controls['storeCity'].valid   && storeUpdateTrue}">
+      <label for="city">Store city</label>
+      <input class="form-control" id="city" placeholder="Enter store city" type="text" formControlName="storeCity" [(ngModel)]="storeDetails.storeCity">
+    </div>
+  </div>
+<!--/.row-->
+<div class="row">
+  <div class="form-group col-sm-6" [ngClass]="{'has-error':!updateStore.controls['storeState'].valid   && storeUpdateTrue}">
+    <label for="city">Store State</label>
+    <input class="form-control" id="city" placeholder="Enter store State" type="text" formControlName="storeState" [(ngModel)]="storeDetails.storeState">
+  </div>
+  <div class="form-group col-sm-6" [ngClass]="{'has-error':!updateStore.controls['storeZip'].valid   && storeUpdateTrue}">
+    <label for="city">Store Zip</label>
+    <input class="form-control" id="city" placeholder="Enter store Zip" type="text" formControlName="storeZip" [(ngModel)]="storeDetails.storeZip">
+  </div>
+</div>
+
+
+<div class="">
+  <label for="">
+    <input (change)="ShowCredendtials()" type="checkbox" name="" value="">
+    <b style="vertical-align: super">Credentials</b>
+  </label>
+</div>
+  <div *ngIf="isCredentials" class="form-group" [ngClass]="{'has-error':!updateStore.controls['userPassword'].valid   && storeUpdateTrue}">
+    <label for="country">Password</label>
+    <input class="form-control" id="country" placeholder="Enter password" type="text" formControlName="userPassword">
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Update Store" class="btn btn-primary">
+  </div>
+</form>
+
+<div class="loader" *ngIf="storeDetailsLoading" style="padding-top:100px">
+  <div class="loader-inner ball-pulse">
+    <div class="my-loader"></div>
+    <div class="my-loader"></div>
+    <div class="my-loader"></div>
+  </div>
+</div>
+
+<div class="clearfix"></div>

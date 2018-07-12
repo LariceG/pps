@@ -1,0 +1,75 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <toaster-container></toaster-container>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">List Admins</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-md-12" *ngIf="Loading">
+              <div class="loader">
+                <div class="loader-inner ball-pulse">
+                  <div class="my-loader"></div>
+                  <div class="my-loader"></div>
+                  <div class="my-loader"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12" *ngIf="!Loading">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <tr>
+                    <th>Admin name</th>
+                    <th>Admin email</th>
+                    <th>Admin mobile</th>
+                    <th>Admin city</th>
+                    <th>Actions</th>
+                  </tr>
+                  <tr *ngFor="let admin of AdminList; let i = index">
+                    <td>{{ admin.adminName }}</td>
+                    <td>{{ admin.adminEmail }}</td>
+                    <td>{{ admin.adminMobile }}</td>
+                    <td>{{ admin.adminCity }}</td>
+                    <td>
+                      <i class="fa fa-edit icon-btn" (click)="editAdmin(admin.adminUserId)"></i>
+                      <i class="fa fa-trash icon-btn" (click)="deleteAdminConfirm(admin.adminId)"></i>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2>Are you sure?</h2>
+        <br><br>
+        <button (click)="deleteAdmin()" type="button" name="button" class="btn btn-primary">Yes</button>
+        <button data-dismiss="modal" type="button" name="button" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-lg" style="max-width:80%">
+    <div class="modal-content">
+      <div class="modal-body">
+        <app-update-admin [admin]="adminToEdit" (onSuccess)="handleUpdate($event)" *ngIf="adminEdit"></app-update-admin>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<app-spheader></app-spheader>
+<toaster-container></toaster-container>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">Add Store</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;"><div class="animated fadeIn">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-header">
+                <strong>Add Store</strong>
+              </div>
+              <div class="card-body">
+                <form [formGroup]="addStore" (ngSubmit)="submitStoreForm(addStore.value)">
+                  <div class="form-group" [ngClass]="{'has-error':!addStore.controls['storeName'].valid   && storeAddTrue}">
+                    <label for="company">Store name</label>
+                    <input class="form-control" id="company" placeholder="Enter Store name" type="text" formControlName="storeName">
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group col-md-6" [ngClass]="{'has-error':!addStore.controls['storeEmail'].valid   && storeAddTrue}">
+                      <label for="vat">Store email</label>
+                      <input class="form-control" id="vat" placeholder="Enter Store email" type="text" formControlName="storeEmail">
+                      <span *ngIf="addStore.controls['storeEmail'].hasError('email') && storeAddTrue">Enter Valid Email</span>
+                    </div>
+                    <div class="form-group col-md-6" [ngClass]="{'has-error':!addStore.controls['storeMobile'].valid   && storeAddTrue}">
+                      <label for="vat">Store Mobile</label>
+                      <input class="form-control" id="vat" placeholder="Enter Store Mobile" type="text" formControlName="storeMobile">
+                    </div>
+                  </div>
+
+                  <div class="form-group" [ngClass]="{'has-error':!addStore.controls['storeAddress'].valid   && storeAddTrue}">
+                    <label for="street">Store address</label>
+                    <textarea class="form-control" placeholder="Enter Store address" formControlName="storeAddress" rows="2" cols="80"></textarea>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group col-sm-12" [ngClass]="{'has-error':!addStore.controls['storeCity'].valid   && storeAddTrue}">
+                      <label for="city">Store city</label>
+                      <input class="form-control" id="city" placeholder="Enter store city" type="text" formControlName="storeCity">
+                    </div>
+                  </div>
+                <!--/.row-->
+                <div class="row">
+                  <div class="form-group col-sm-6" [ngClass]="{'has-error':!addStore.controls['storeState'].valid   && storeAddTrue}">
+                    <label for="city">Store State</label>
+                    <input class="form-control" id="city" placeholder="Enter store State" type="text" formControlName="storeState">
+                  </div>
+                  <div class="form-group col-sm-6" [ngClass]="{'has-error':!addStore.controls['storeZip'].valid   && storeAddTrue}">
+                    <label for="city">Store Zip</label>
+                    <input class="form-control" id="city" placeholder="Enter store Zip" type="text" formControlName="storeZip">
+                  </div>
+                </div>
+
+                  <div class="row">
+                    <div class="form-group col-md-12">
+                      <input type="checkbox" (change)="asignCrendialsFun()">
+                      <span> Assign credentials</span>
+                    </div>
+                    <div class="clearfix">
+                    </div>
+                  </div>
+                  <div *ngIf="asignCrendials" class="row">
+                    <div class="form-group col-md-6" [ngClass]="{'has-error':!addStore.controls['userName'].valid   && storeAddTrue}">
+                      <label for="country">User name</label>
+                      <input class="form-control" id="country" placeholder="Enter Username" type="text" formControlName="userName">
+                    </div>
+                    <div class="form-group col-md-6" [ngClass]="{'has-error':!addStore.controls['userEmail'].valid   && storeAddTrue}">
+                      <label for="country">User Email</label>
+                      <input class="form-control" id="country" placeholder="Enter email" type="text" formControlName="userEmail">
+                      <span *ngIf="addStore.controls['userEmail'].hasError('email') && storeAddTrue">Enter Valid Email</span>
+                    </div>
+                    <div class="form-group col-md-12" [ngClass]="{'has-error':!addStore.controls['userPassword'].valid   && storeAddTrue}">
+                      <label for="country">Password</label>
+                      <input class="form-control" id="country" placeholder="Enter password" type="password" formControlName="userPassword">
+                      <span *ngIf="addStore.controls['userPassword'].hasError('min') && storeAddTrue">Enter Valid Email</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-12">
+                      <input type="submit" value="Add Store" class="btn btn-primary" [attr.disabled]="storeAdding == true ? true : null">
+                    </div>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+  </main>
+</div>

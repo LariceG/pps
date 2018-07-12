@@ -1,0 +1,56 @@
+<!-- <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color:#fff">
+  <a class="navbar-brand" href="#">
+<img src="assets/img/PPS-Logo-1.png" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/products">Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/cart">Cart</a>
+      </li>
+    </ul>
+  </div>
+
+</nav> -->
+<div class="navbar-outer" >
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 "> <a class="navbar-brand" routerLink="/">
+        <img src="assets/img/PPS-Logo-1.png"/></a>
+         <div class="log">
+        <a *ngIf="!LoggedIn" class="ppd" routerLink="/portal">Ppd Portal</a>
+        <a *ngIf="!LoggedIn" class="ppd" routerLink="/customer-login">Customer Login </a>
+      </div></div>
+      <div class="col-md-6" >
+        <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto" *ngIf="!LoggedIn">
+              <li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
+              <li class="nav-item"> <a class="nav-link" href="#">About</a> </li>
+              <li class="nav-item"> <a class="nav-link " href="#">News</a> </li>
+              <li class="nav-item"> <a class="nav-link" routerLink="/products">Product</a> </li>
+              <li class="nav-item cont"> <a class="nav-link " href="#">Contact</a> </li>
+            </ul>
+            <ul class="navbar-nav mr-auto" *ngIf="LoggedIn && token.userType == 2">
+              <li class="nav-item"> <a class="nav-link" routerLink="/profile/orders">Home</a> </li>
+              <li class="nav-item"> <a class="nav-link" routerLink="/products">Products</a> </li>
+              <li class="nav-item"> <a class="nav-link" routerLink="/profile/cart">My Cart <i class="fa fa-shopping-cart"></i></a> </li>
+            </ul>
+            <ul class="navbar-nav mr-auto" *ngIf="LoggedIn && token.userType == 3">
+              <li class="nav-item"> <a class="nav-link" routerLink="/dashboard">Home</a> </li>
+              <li class="nav-item"> <a class="nav-link" routerLink="/products">Products</a> </li>
+              <li class="nav-item"> <a class="nav-link" routerLink="/dashboard/cart">My Cart <i class="fa fa-shopping-cart"></i></a> </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

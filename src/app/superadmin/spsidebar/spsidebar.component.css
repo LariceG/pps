@@ -1,0 +1,65 @@
+[data-play="dropdown"]
+{
+  cursor: pointer;
+}
+
+tr.ok input
+{
+  border-color: #5cb85c !important;
+}
+
+tr.ok td i.ok
+{
+  display: block !important;
+}
+
+tr.already input , input.input-error
+{
+  border-color: #f0ad4e !important;
+}
+
+tr.already td i.already
+{
+  display: block !important;
+}
+
+tr.error input
+{
+  border-color: #d9534f !important;
+}
+
+tr.error td i.error
+{
+  display: block !important;
+}
+
+ul.attachments
+{
+  list-style: none;
+  padding-left: 0px;
+}
+
+ul.attachments li
+{
+  font-size: 14px;
+  border: 1px #ddd solid;
+  margin-bottom: 9px;
+  padding-left: 10px;
+  position: relative;
+}
+
+ul.attachments li i.fa-times
+{
+  position: absolute;
+  right: 5px;
+  top: 4px;
+}
+
+.progress.my
+{
+  width: 84px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  height: 11px;
+  display: inline-block;
+}

@@ -1,0 +1,145 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <toaster-container></toaster-container>
+  <app-spsidebar></app-spsidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">List Stores</li>
+      </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;"><div class="animated fadeIn">
+        <div class="row">
+
+
+
+
+          <div class="col-lg-9">
+
+                <div class="loader" *ngIf="storeLoading">
+                  <div class="loader-inner ball-pulse">
+                    <div class="my-loader"></div>
+                    <div class="my-loader"></div>
+                    <div class="my-loader"></div>
+                  </div>
+                </div>
+
+                <div class="">
+                  <div style="margin-bottom:10px">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search for stores" [(ngModel)]="searchText" (keyup)="Search()">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card" *ngIf="!storeLoading">
+                  <div class="card-header">
+                    Stores
+                    <div class="dropdow pull-right">
+                      <button type="button" name="button" (click)="deleteee()"  class="btn btn-primary btn-sm">Delete</button>
+                      <button data-toggle='dropdown' type="button" name="button" class="btn btn-primary btn-sm">Per page</button>
+                      <span class="caret"></span>
+                      <!-- <i class="fa fa-arrow-down"></i> -->
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" (click)="updaetPerPage(10)">5</a></li>
+                        <li><a class="dropdown-item" (click)="updaetPerPage(10)">10</a></li>
+                        <li><a class="dropdown-item" (click)="updaetPerPage(20)">20</a></li>
+                        <li><a class="dropdown-item" (click)="updaetPerPage(30)">30</a></li>
+                      </ul>
+                    </div>
+                  </div>
+
+
+                  <div class="card-body" >
+                    <div *ngIf="!storeLoading && stores.length == 0">
+                      No Store found
+                    </div>
+                    <table class="table table-bordered"  *ngIf="!storeLoading && stores.length != 0">
+                      <thead>
+                        <tr>
+                          <th><input type="checkbox" [checked]="isAllChecked()" (change)="checkAll($event)"> </th>
+                          <th>Store Name</th>
+                          <th>Store City</th>
+                          <th>Store email</th>
+                          <!-- <th>Status</th> -->
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let store of stores | paginate: { itemsPerPage: perpage, currentPage: page, totalItems: totalItem }">
+                          <td><input class="storeChecks" [attr.dd]="store.storeUserId" type="checkbox" value="{{store.id}}" [(ngModel)]="store.state"></td>
+                          <td>{{store.storeName}}</td>
+                          <td>{{store.storeCity}}</td>
+                          <td>{{store.storeEmail}}</td>
+                          <!-- <td>
+                            <span *ngIf="store.storeStatus == 1" class="badge badge-success">Active</span>
+                            <span *ngIf="store.storeStatus == 2" class="badge badge-warning">InActive</span>
+                          </td> -->
+                          <td>
+                            <a (click)="deleteStoreConfirm(store.storeUserId)" class="fa fa-remove icon-btn"></a>
+                            <a (click)="editStore(store.storeId)" class="fa fa-edit icon-btn"></a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <pagination-controls (pageChange)="page = listStores($event)" maxSize="9" directionLinks="true" autoHide="true" previousLabel="Prev" nextLabel="Next" screenReaderPaginationLabel="Pagination" screenReaderPageLabel="page" screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+
+
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+  </main>
+</div>
+
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Update Store
+      </div>
+      <div class="modal-body" style="min-height:100px">
+        <app-update-stor (onSuccess)="handleStoreUpdate($event)" *ngIf="storeEdit" [storeToEdit]="storeToEdit"></app-update-stor>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2>Are you sure?</h2>
+        <br><br>
+        <button (click)="deleteStore()" type="button" name="button" class="btn btn-primary">Yes</button>
+        <button data-dismiss="modal" type="button" name="button" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal2">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <h2>Are you sure?</h2>
+        <br><br>
+        <button (click)="bulkDelete()" type="button" name="button" class="btn btn-primary">Yes</button>
+        <button data-dismiss="modal" type="button" name="button" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

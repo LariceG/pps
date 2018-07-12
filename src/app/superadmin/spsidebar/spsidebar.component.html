@@ -1,0 +1,213 @@
+<div class="sidebar" style="height:600px;">
+  <nav class="sidebar-nav">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/admin-panel/list-orders','approved']"><i class="icon-speedometer"></i> Dashboard</a>
+      </li>
+
+      <!-- <li class="nav-title">
+        UI Elements
+      </li> -->
+      <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-puzzle"></i> Products</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/categories"><i class="icon-star"></i> Categories</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-product"><i class="icon-star"></i> Add Product</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-products"><i class="icon-star"></i> List Products</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-star"></i> Stores</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-stores"><i class="icon-star"></i> List Stores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-store"><i class="icon-star"></i> Add a new store</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/new-stores-access-requests"><i class="icon-star"></i> New store requests</a>
+          </li>
+          <li class="nav-item hide" hand>
+            <a class="nav-link" (click)="importStores('openfile')"><i class="icon-star"></i> Import Stores</a>
+          </li>
+          <li class="nav-item hide" hand>
+            <a class="nav-link" (click)="Sample()"><i class="icon-download"></i> Sample Excel File</a>
+          </li>
+          <input type="file" id="excelfile" style="display:none" (change)="importStores('handlefile',$event)">
+        </ul>
+        </li>
+      <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-star"></i> APLS</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-apls"><i class="icon-star"></i> Add APLS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-apls"><i class="icon-star"></i> List APLS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/admin-panel/list-apls','readonly']"><i class="icon-star"></i> List APLS Readonly</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-star"></i> Simple Line Icons</a>
+          </li> -->
+        </ul>
+      </li>
+      <li class="nav-item nav-dropdown" routerLinkActive="open">
+        <a class="nav-link nav-dropdown-toggle" data-play="dropdown"><i class="icon-star"></i> Admin</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/add-admin"><i class="icon-star"></i> Add Admin</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin-panel/list-admin"><i class="icon-star"></i> List Admins</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/admin-panel/list-orders/','approved']"><i class="icon-speedometer"></i> Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin-panel/settings"><i class="icon-speedometer"></i> Account settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" #pickfiles ><i class="icon-speedometer"></i> Upload Newsletter</a>
+      </li>
+
+
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="widgets.html"><i class="icon-calculator"></i> Widgets <span class="badge badge-primary">NEW</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="charts.html"><i class="icon-pie-chart"></i> Charts</a>
+      </li>
+      <li class="divider"></li>
+      <li class="nav-title">
+        Extras
+      </li>
+      <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-star"></i> Pages</a>
+        <ul class="nav-dropdown-items">
+          <li class="nav-item">
+            <a class="nav-link" href="pages-login.html" target="_top"><i class="icon-star"></i> Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pages-register.html" target="_top"><i class="icon-star"></i> Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-star"></i> Error 404</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-star"></i> Error 500</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item mt-auto">
+        <a class="nav-link nav-link-success" href="http://coreui.io/" target="_top"><i class="icon-cloud-download"></i> Download CoreUI</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link nav-link-danger" href="http://coreui.io/pro/" target="_top"><i class="icon-layers"></i> Try CoreUI <strong>PRO</strong></a>
+      </li> -->
+
+    </ul>
+  </nav>
+  <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+</div>
+
+
+
+<div class="modal fade" id="importStores">
+  <div class="modal-dialog" style="max-width:92%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Import Stores</h5>
+        <i class="close"> &times; </i>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table>
+            <tr>
+              <th>Store Name</th>
+              <th>Store Class</th>
+              <th>Store Email</th>
+              <th>Store Mobile</th>
+              <th>Store Address</th>
+              <th>Store City</th>
+              <th>Store State</th>
+              <th>Store Zip</th>
+              <th>User Name</th>
+              <th>User Email</th>
+              <th>User Password</th>
+              <th>Action</th>
+            </tr>
+            <tbody *ngFor="let str of StoreImports; let i = index">
+              <tr [class.ok]="ConSheetErrors[i] == 0" [class.error]="ConSheetErrors[i] == 1" [class.already]="ConSheetErrors[i] == 2">
+                <td>
+                  <!-- <i class="fa fa-check ok" style="color:#5cb85c; display:none"></i>
+                  <i class="fa fa-check already" style="color:#f0ad4e; display:none"></i>
+                  <i class="fa fa-check error" style="color:#d9534f;  display:none"></i> -->
+                  <input class="form-control required" type="text" [(ngModel)]="str.storeName" style="width:150px">
+                </td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeClass" style="width:150px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeEmail" style="width:150px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeMobile" style="width:150px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeAddress" style="width:150px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeCity" style="width:100px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeState" style="width:100px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.storeZip" style="width:100px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.userName" style="width:100px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.userEmail" style="width:100px"></td>
+                <td><input class="form-control" type="text" [(ngModel)]="str.userPassword" style="width:150px"></td>
+                <td class="text-center"><i class="fa fa-trash" (click)="removeStoreImport()"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" name="button" class="btn btn-primary" (click)="importStores('importFile')">Import</button>
+        <button type="button" name="button" class="btn" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Upload Catalogue
+        <span class="close" (click)="hideModal()"> &times; </span>
+      </div>
+      <div class="modal-body">
+
+        <ul *ngIf="fileList.length > 0" class="attachments">
+          <li *ngFor="let file of fileList; let i = index" [class.text-success]="file.percent == 100">
+            {{ (file.name.length>30)? (file.name | slice:0:30)+'..':(file.name) }} ({{ file.size }})
+            <!-- <span *ngIf="file.percent != 100">{{ file.percent }}%</span> -->
+            <!-- <i class="fa fa-check" *ngIf="file.percent == 100"></i> -->
+            <div class="progress my" *ngIf="file.percent != 100">
+              <div class="progress-bar" [ngStyle]="{'width': file.percent+'%'}">
+              </div>
+            </div>
+            <i (click)="removeMailAttachment(i)" *ngIf="file.percent != 100" class="fa fa-times" aria-hidden="true"></i>
+            <i class="fa fa-check" *ngIf="file.percent == 100"></i>
+            <!-- <i class="fa fa-circle-o-notch fa-spin fa-fw" *ngIf="file.percent != 100"></i> -->
+          </li>
+        </ul>
+
+
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>

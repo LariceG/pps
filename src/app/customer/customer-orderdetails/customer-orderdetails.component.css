@@ -1,0 +1,15 @@
+.orderst
+{
+  color: #666 !important;
+  text-align: center;
+}
+
+.orderst i
+{
+  font-size: 43px;
+}
+
+.orderst.active
+{
+  color: #333 !important
+}

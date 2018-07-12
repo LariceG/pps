@@ -1,0 +1,129 @@
+<header class="app-header navbar">
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#"></a>
+  <!-- <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button> -->
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="img/avatars/6.jpg" class="img-avatar" alt="Admin">
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+      </div>
+    </li>
+  </ul>
+  <button class="navbar-toggler aside-menu-toggler" type="button">
+    <!-- <span class="navbar-toggler-icon"></span> -->
+  </button>
+</header>
+
+
+
+<div class="app-body">
+  <div class="sidebar" style="height:600px;">
+    <nav class="sidebar-nav">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/orders"><i class="icon-speedometer"></i> Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/cart"><i class="icon-basket"></i> Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/settings"><i class="icon-user"></i> Account settings</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Home</li>
+      <li class="breadcrumb-item"><a href="#">Admin</a></li>
+      <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-lg-9">
+              <!-- {{Orderdetails | json }} -->
+              <h2>
+                <i *ngIf="Orderdetails.orderStatus == 1" class="icon-check"></i>
+                <i *ngIf="Orderdetails.orderStatus == 2" class="icon-ban"></i>
+                <i *ngIf="Orderdetails.orderStatus == 0" class="icon-clock"></i>
+                <span *ngIf="Orderdetails.orderStatus == 0">Pending</span>
+                <span *ngIf="Orderdetails.orderStatus == 2">Denied</span>
+                <span *ngIf="Orderdetails.orderStatus == 1 && Orderdetails.Shipped == 0">Approved</span>
+                <span *ngIf="Orderdetails.orderStatus == 1 && Orderdetails.Shipped == 1">Shipped</span>
+              </h2>
+              <p style="margin-bottom: 4px;">Total Amount - ${{Orderdetails.orderTotal | number : '1.2-2' }}</p>
+              <p style="margin-bottom: 4px;">Date Placed - {{Orderdetails.orderAddedOn | date : 'short' }}</p>
+              <!-- <p style="margin-bottom: 4px;">Store id - {{Orderdetails.storeId}}</p> -->
+              <p style="margin-bottom: 4px;">Store name - {{Orderdetails.storeName}}</p>
+              <p>Store address - {{Orderdetails.storeAddress}}</p>
+              <br>
+              <div *ngIf="(Orderdetails | json) != '{}'">
+                <div class="" *ngIf="Orderdetails.Shipped == 0">
+                  Fedex Tracking number is not updated
+                </div>
+                <div>
+                  <div class="row">
+                    <div class="col-md-4 orderst active">
+                      <i class="fa fa-check-circle"></i>
+                      <h3>Received</h3>
+                    </div>
+                    <div class="col-md-4 orderst" [class.active]="Orderdetails.Shipped == 1">
+                      <i class="fa fa-check-circle"></i>
+                      <h3>Processed</h3>
+                    </div>
+                    <div class="col-md-4 orderst" [class.active]="Orderdetails.Shipped == 1">
+                      <i class="fa fa-check-circle"></i>
+                      <h3>Shipped</h3>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <br>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Item name</th>
+                    <th>Item Id</th>
+                    <th>Item quantity</th>
+                    <th>Item Price</th>
+                    <th>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of Orderdetails.items">
+                    <!-- <td>{{item.orderproductName}}</td>
+                    <td>{{item?.productVarItemId}}</td> -->
+                    <td *ngIf="item.productVarDesc != ''">{{item.productVarDesc}}</td>
+                    <td *ngIf="item.productVarDesc == ''">{{item.productVarDesc_safe}}</td>
+
+                    <td *ngIf="item.productVarItemId != ''">{{item?.productVarItemId}}</td>
+                    <td *ngIf="item.productVarItemId == ''">{{item?.productVarItemId_safe}}</td>
+                    <td>{{item.orderItemQty}}</td>
+                    <td>${{ (item.orderItemPrice / item.orderItemQty) | number : '1.2-2'}}</td>
+                    <td>${{item.orderItemPrice | number : '1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>

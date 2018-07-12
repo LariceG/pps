@@ -1,0 +1,114 @@
+<header class="app-header navbar">
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#"></a>
+  <!-- <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button> -->
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+      <a hand class="nav-link" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+    </li>
+    <!-- <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="img/avatars/6.jpg" class="img-avatar" alt="Admin">
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <li class="nav-item dropdown">
+          <a hand class="nav-link" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+        </li>
+      </div>
+    </li> -->
+  </ul>
+  <button class="navbar-toggler aside-menu-toggler" type="button">
+    <!-- <span class="navbar-toggler-icon"></span> -->
+  </button>
+</header>
+
+
+
+<div class="app-body">
+  <div class="sidebar" style="height:600px;">
+    <nav class="sidebar-nav">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/orders"><i class="icon-speedometer"></i> Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/cart"><i class="icon-basket"></i> Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/settings"><i class="icon-user"></i> Account settings</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"> <a routerLink="/profile">Profile</a></li>
+      <li class="breadcrumb-item active">Orders</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row" *ngIf="Orders.length == 0 && orderLoading">
+            <div class="loader">
+              <div class="loader-inner ball-pulse">
+                <div class="my-loader"></div>
+                <div class="my-loader"></div>
+                <div class="my-loader"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row" *ngIf="Orders.length != 0 && !orderLoading">
+            <div class="col-lg-9">
+              <div class="card">
+                <div class="card-header">
+                  Orders
+                </div>
+                <div class="card-body">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Order Number</th>
+                        <th>Order Date</th>
+                        <th>Order Status</th>
+                        <th>Total amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let order of Orders">
+                        <td>
+                          <a [routerLink]="['/profile/order-details',order.orderNumber]">{{order.orderNumber}}
+                          </a>
+                        </td>
+                        <td>{{order.orderAddedOn}}</td>
+                        <td>
+                          <span *ngIf="order.orderStatus == 0">Pending</span>
+                          <span *ngIf="order.orderStatus == 1">Accepted</span>
+                          <span *ngIf="order.orderStatus == 2">Rejected</span>
+                        </td>
+                        <td>${{order.orderTotal}}</td>
+                        <!-- <td>
+                          <a *ngIf="order.orderStatus != 1" (click)="UpdateOrderStatus(1,order.orderNumber)" class="btn btn-xs btn-primary"> Accept</a>
+                          <a *ngIf="order.orderStatus != 1" (click)="UpdateOrderStatus(2,order.orderNumber)" class="btn btn-xs btn-warning"> Reject</a>
+                        </td> -->
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </main>
+
+</div>

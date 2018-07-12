@@ -1,0 +1,24 @@
+.modal-lg
+{
+	max-width: 1200px;
+}
+
+.btn-xs
+{
+	border: 1px #e4e4e4 solid;
+	padding: 1px 9px;
+}
+
+.btn-xs:hover
+{
+	box-shadow: 0px 0px 0px 2px #f5f5f5;
+}
+
+.sel
+{
+	padding: 2px 6px;
+	width: 146px;
+	display: inline-block;
+	height: 25px !important;
+	font-size: 14px !important;
+}

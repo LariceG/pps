@@ -1,0 +1,255 @@
+
+<toaster-container></toaster-container>
+
+<div class="container" style="padding-top:100px">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="text-center">
+        <a routerLink="/">
+          <img src="assets/img/PPS-Logo-1.png"/>
+        </a>
+      </div>
+      <br>
+      <div class="card-group">
+        <div class="card p-4">
+          <div class="card-body">
+            <p class="text-muted">Sign In to your account</p>
+            <form [formGroup]="login" (ngSubmit)="submitForm(login.value)">
+              <div class="input-group mb-3">
+                <span class="input-group-addon"><i class="icon-user"></i></span>
+                <input type="text" class="form-control" placeholder="Username"  [formControl]="login.controls['username']" [ngClass]="{'has-error':!login.controls['username'].valid   && loginsubmitted}" >
+                <br>
+                <div class="invalid-feedback" *ngIf="login.controls['username'].hasError('required')    && loginsubmitted">You must include a Username.</div>
+              </div>
+              <div class="input-group mb-4">
+                <span class="input-group-addon"><i class="icon-lock"></i></span>
+                <input type="password" class="form-control" placeholder="Password"  [formControl]="login.controls['password']" [ngClass]="{'has-error':!login.controls['password'].valid   && loginsubmitted}">
+                <br>
+                <div class="invalid-feedback"  *ngIf="login.controls['password'].hasError('required')    && loginsubmitted">You must include a Password.</div>
+              </div>
+              <div class="row">
+                <div class="col-8">
+                  <button type="submit" class="btn btn-primary px-4">Login</button>
+                  <br>
+                  <a hand data-toggle="modal" data-target="#eRequest">Submit e-Request for system access</a>
+                </div>
+                <!-- <div class="col-6 text-right">
+                  <button type="button" class="btn btn-link px-0">Forgot password?</button>
+                </div> -->
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
+          <div class="card-body text-center">
+            <div>
+              <h2>Sign up</h2>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+              <button type="button" class="btn btn-primary active mt-3">Register Now!</button>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="eRequest">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form [formGroup]="eRequest" (ngSubmit)="submiteRequest(eRequest.value)">
+        <div class="modal-header">
+          e-Request for system access
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_name'].valid   && eRequestsubmitted}">
+                <label for="">Name and Title</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_name']">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_name'].valid   && eRequestsubmitted}">
+                <label for="">Company  Name</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_companyName']">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_bussAddress'].valid   && eRequestsubmitted}">
+                <label for="">Business Address</label>
+                <textarea name="name" rows="2" cols="80" class="form-control" [formControl]="eRequest.controls['sys_bussAddress']"></textarea>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_city'].valid   && eRequestsubmitted}">
+                <label for="">City</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_city']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_state'].valid   && eRequestsubmitted}">
+                <label for="">State/Province</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_state']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_zip'].valid   && eRequestsubmitted}">
+                <label for="">Zip</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_zip']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_country'].valid   && eRequestsubmitted}">
+                <label for="">Country</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_country']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="type" value="Corporation" [(ngModel)]="sys_typeOfBuss" [ngModelOptions]="{standalone: true}">
+                Corporation</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="type" value="LLC/LLP" [(ngModel)]="sys_typeOfBuss" [ngModelOptions]="{standalone: true}">
+                LLC/LLP</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="type" value="Sole Proprietorship" [(ngModel)]="sys_typeOfBuss" [ngModelOptions]="{standalone: true}">
+                Sole Proprietorship</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="checkbox" class="form-control">
+                  <input type="radio" name="type" value="Corporation" [(ngModel)]="sys_typeOfBuss" [ngModelOptions]="{standalone: true}">
+                <input type="text" class="form-control">
+              </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="">FEIN or Other Identifying Number</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_ideNumber']">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="">Mailing Address (if different than above):</label>
+                <textarea rows="2" cols="80" class="form-control" [formControl]="eRequest.controls['sys_mailAddress']"></textarea>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">City</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailCity']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">State/Province</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailState']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">Zip</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailZip']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">Phone Number</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailPhone']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">ext.</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailExt']">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group" [ngClass]="{'has-error':!eRequest.controls['sys_mailEmail'].valid   && eRequestsubmitted}">
+                <label for="">Email Address of Primary Contact:</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_mailEmail']">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label for="">Number of Locations</label>
+                <input type="text" class="form-control" [formControl]="eRequest.controls['sys_numberOfLoc']">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for=""> Any International? </label>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="int" class="form-control" value="yes" [(ngModel)]="sys_anyInternational" [ngModelOptions]="{standalone: true}">
+                  Yes
+              </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="int" class="form-control" value="no" [(ngModel)]="sys_anyInternational" [ngModelOptions]="{standalone: true}">
+                  No
+              </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="">Annual Spend EAS/LP Products (optional)</label>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="anual" class="form-control" value="$0-10,000" [(ngModel)]="sys_annualSpendEas" [ngModelOptions]="{standalone: true}">
+                  $0-10,000
+              </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="anual" class="form-control" value="$10,000-50,000" [(ngModel)]="sys_annualSpendEas" [ngModelOptions]="{standalone: true}">
+                  $10,000-50,000
+              </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="anual" class="form-control" value="$50,000-100,000" [(ngModel)]="sys_annualSpendEas" [ngModelOptions]="{standalone: true}">
+                  $50,000-100,000
+              </label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="checkbox">
+                <label for="">
+                  <input type="radio" name="anual" class="form-control" value="$100,000+" [(ngModel)]="sys_annualSpendEas" [ngModelOptions]="{standalone: true}">
+                  $100,000+
+              </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" name="button" class="btn btn-primary">Send</button>
+          <button type="button" name="button" class="btn btn-default">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

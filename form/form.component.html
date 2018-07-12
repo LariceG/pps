@@ -1,0 +1,35 @@
+
+
+
+
+<div class="col-md-6">
+  <div [froalaEditor]="editorOptions" [(ngModel)]="FroalaData">Hello, Froala!</div>
+
+<br>Tags : &nbsp;
+  <button type="button" name="button" (click)="addTag('{Name}')">Name</button>
+  <button type="button" name="button" (click)="addTag('{Ssn}')">SSN</button>
+  <button type="button" name="button" class="add" dd="abc">adddd</button>
+  <button type="button" name="button" class="add" dd="abcd">adddd</button>
+<br><br>
+  <button type="button" name="button" (click)="cksave()">save</button>
+</div>
+
+<!-- <quill-editor [style]="{height: '200px'}" ></quill-editor> -->
+<p [hidden]="!isPluploadReady">
+  <button #pickfiles class="btn btn-primary">
+    Select files
+  </button>
+  <button (click)="uploadFiles()" class="btn btn-warning">
+    Upload selected file(s)
+  </button>
+</p>
+
+{{ fileList | json }}
+<!-- Files being uploaded -->
+<ul *ngIf="fileList.length > 0">
+  <li *ngFor="let file of fileList">
+    {{ file.name }} ({{ file.size }}) - {{ file.percent }}%
+    <span *ngIf="file.percent != 100">Uploading...</span>
+    <span *ngIf="file.percent == 100">Uploaded</span>
+  </li>
+</ul>

@@ -1,0 +1,185 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <toaster-container></toaster-container>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">Add Product</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <form [formGroup]="ProducForm" (ngSubmit)="submitProduct(ProducForm.value)">
+            <div class="row">
+              <div class="col-lg-5">
+                <div class="card">
+                  <div class="card-header">
+                  Add Products
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!ProducForm.controls['productName'].valid   && productSubmission}">
+                          <label for="">Product name</label>
+                          <input type="text" class="form-control" placeholder="Product Name" formControlName="productName">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!ProducForm.controls['productCode'].valid   && productSubmission}">
+                          <label for="">Product Code</label>
+                          <input type="text" class="form-control" placeholder="Product Name" formControlName="productCode">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-12">
+                        <label for="company">Store class</label>
+                        <br>
+                        <label class="checkbox-inline">
+                          <input type="checkbox"   [value]="1" (change)="productClasses[$event.target.getAttribute('value')]=$event.target.checked"/>
+                          Class 1
+                        </label>
+                        <label class="checkbox-inline">
+                          <input type="checkbox"   [value]="2" (change)="productClasses[$event.target.getAttribute('value')]=$event.target.checked"/>
+                          Class 2
+                        </label>
+                        <label class="checkbox-inline">
+                          <input type="checkbox"   [value]="3" (change)="productClasses[$event.target.getAttribute('value')]=$event.target.checked"/>
+                          Class 3
+                        </label>
+                        <label class="checkbox-inline">
+                          <input type="checkbox"   [value]="4" (change)="productClasses[$event.target.getAttribute('value')]=$event.target.checked"/>
+                          Class 4
+                        </label>
+                        <label class="checkbox-inline">
+                          <input type="checkbox"   [value]="5" (change)="productClasses[$event.target.getAttribute('value')]=$event.target.checked"/>
+                          Class 5
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!ProducForm.controls['productCategory'].valid   && productSubmission}">
+                          <label for="">Product Category</label>
+                          <select class="form-control" formControlName="productCategory">
+                            <option [selected]="true" value="">Select Category</option>
+                            <option [ngClass]="'lev'+cat.catLevel" *ngFor="let cat of CatList" [value]="cat.catId">
+                              <span *ngIf="cat.catLevel == 1"> &nbsp;&nbsp; </span>
+                              <span *ngIf="cat.catLevel == 2"> &nbsp;&nbsp;&nbsp; </span>
+                              <span *ngIf="cat.catLevel == 3"> &nbsp;&nbsp;&nbsp;&nbsp; </span>
+                              {{ cat.catName }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!ProducForm.controls['productPrice'].valid   && productSubmission}">
+                          <label for="">Product Price</label>
+                          <input type="text" class="form-control" placeholder="Product Price" formControlName="productPrice">
+                          <span *ngIf="ProducForm.controls['productPrice'].hasError('pattern') && productSubmission">Enter Valid Price</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="">Description</label>
+                          <ckeditor
+                            [(ngModel)]="productDescription"
+                            debounce="500" [ngModelOptions]="{standalone: true}">
+                          </ckeditor>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="">Product Image</label>
+                          <div class="img_brow img-thumbnail" *ngIf="!showImageUploading">
+                            <img [src]="productImagePath != '' ? productImagePath : 'assets/img/demo.png'" alt="" class="img-thumbnail">
+                            <div class="fafa_icon">
+                              <i class="fa fa-camera" aria-hidden="true"></i>
+                              <input #fileInput type="file" (change)="uploadproductImage($event)" accept="image/*"  title=" "/>
+                            </div>
+                          </div>
+                          <div class="img_brow img-thumbnail imageuploadingLoader" *ngIf="showImageUploading">
+                            <img src="assets/img/loading.gif" alt="" class="img-thumbnail">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <ul *ngIf="fileList.length > 0" class="attachments">
+                          <li *ngFor="let file of fileList; let i = index" [class.text-success]="file.percent == 100">
+                            {{ (file.name.length>30)? (file.name | slice:0:30)+'..':(file.name) }} ({{ file.size }})
+                            <!-- <span *ngIf="file.percent != 100">{{ file.percent }}%</span> -->
+                            <!-- <i class="fa fa-check" *ngIf="file.percent == 100"></i> -->
+                            <div class="progress my" *ngIf="file.percent != 100">
+                              <div class="progress-bar" [ngStyle]="{'width': file.percent+'%'}">
+                              </div>
+                            </div>
+                            <i (click)="removeMailAttachment(i)" *ngIf="file.percent != 100" class="fa fa-times" aria-hidden="true"></i>
+                            <i class="fa fa-check" *ngIf="file.percent == 100"></i>
+                            <!-- <i class="fa fa-circle-o-notch fa-spin fa-fw" *ngIf="file.percent != 100"></i> -->
+                          </li>
+                        </ul>
+                        <br>
+                        <button class="btn btn-default" type="button" name="button" id="pick">Upload Instruction File</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-7">
+                <div class="card">
+                  <div class="card-header">
+                    Product Variations
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-bordered" formArrayName="productVariation">
+                        <tr>
+                          <th style="width: 60px">Item Id</th>
+                          <th>Item Description</th>
+                          <th style="width: 80px">Item Price</th>
+                          <th style="width: 80px">Item Quantity</th>
+                          <th style="width: 20px"></th>
+                        </tr>
+                        <tbody *ngFor="let prod of ProducForm.controls.productVariation.controls; let i=index">
+                          <tr  [formGroupName]="i">
+                            <td>
+                              <input  type="text" formControlName="productVarItemId" [ngClass]="{'is-invalid':!ProducForm.controls.productVariation.controls[i].controls.productVarItemId.valid   && productSubmission}" style="width:60px" class="form-control">
+                            </td>
+                            <td>
+                              <input type="text" formControlName="productVarDesc" [ngClass]="{'is-invalid':!ProducForm.controls.productVariation.controls[i].controls.productVarDesc.valid   && productSubmission}" class="form-control">
+                              <span *ngIf="ProducForm.controls['productPrice'].hasError('pattern') && productSubmission">Enter Valid Price</span>
+                            </td>
+                            <td>
+                              <input type="text" formControlName="productVarPrice" [ngClass]="{'is-invalid':!ProducForm.controls.productVariation.controls[i].controls.productVarPrice.valid   && productSubmission}" style="width:80px" class="form-control">
+                            </td>
+                            <td>
+                              <input type="text" formControlName="productVarItemQuantity" [ngClass]="{'is-invalid':!ProducForm.controls.productVariation.controls[i].controls.productVarItemQuantity.valid   && productSubmission}" style="width:80px" class="form-control">
+                            </td>
+                            <td>
+                              <a  (click)="removeVariation(i)" class="fa fa-trash"></a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <button (click)="addVariation()" type="button" class="btn btn-primary add_field_button" style="margin-bottom:20px;">Add variation </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row pull-right">
+              <div class="col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary pull-right">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

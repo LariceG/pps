@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product Protection Solutions</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.png">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="assets/css/toaster.css">
+  <link rel="stylesheet" href="assets/css/loaders.css">
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/angular-tree-component.css" rel="stylesheet">
+  <script src="https://cdn.ckeditor.com/4.5.11/full/ckeditor.js"></script>
+
+
+<style media="screen">
+  body
+  {
+    font-size: 15px !important;
+  }
+
+  .form-control
+  {
+    font-size: 14px
+  }
+
+</style>
+</head>
+<body class="">
+  <app-root>
+    <div class="loader">
+      <div class="loader-inner ball-pulse">
+        <div class="my-loader"></div>
+        <div class="my-loader"></div>
+        <div class="my-loader"></div>
+      </div>
+    </div>
+  </app-root>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <script src="assets/js/owl.carousel.min.js"></script>
+  <script src="assets/js/main.js"></script>
+<script type="text/javascript">
+$(document).on('click', '.visible-xs', function (e) {
+  console.log('clikdd');
+  var margin  = $( ".sidebar" ).css("margin-left");
+  console.log(margin);
+  if(margin == '0px')
+  $( ".sidebar" ).css("margin-left","-220px");
+  else
+  $( ".sidebar" ).css("margin-left","0px");
+});
+
+
+</script>
+<script type="text/javascript" src="assets/pll/plupload.full.min.js"></script>
+
+</body>
+</html>

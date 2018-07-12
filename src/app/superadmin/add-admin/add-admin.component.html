@@ -1,0 +1,119 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <toaster-container></toaster-container>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">Add admin</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <form [formGroup]="addAdmin" (ngSubmit)="submitAdmin(addAdmin.value)">
+            <div class="row">
+              <div class="col-lg-5">
+                <div class="card">
+                  <div class="card-header">
+                  Add Admin
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminName'].valid   && adminSubmission}">
+                          <label for="">Admin name</label>
+                          <input type="text" class="form-control" placeholder="Admin Name" formControlName="adminName">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminEmail'].valid   && adminSubmission}">
+                          <label for="">Admin email</label>
+                          <input type="text" class="form-control" placeholder="Admin email" formControlName="adminEmail">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminMobile'].valid   && adminSubmission}">
+                          <label for="">Admin mobile</label>
+                          <input type="text" class="form-control" placeholder="Admin mobile" formControlName="adminMobile">
+                          <span *ngIf="addAdmin.controls['adminMobile'].hasError('pattern') && adminSubmission">Enter Valid Price</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminAddress'].valid   && adminSubmission}">
+                          <label for="">Admin Address</label>
+                          <textarea class="form-control" rows="4" cols="80" formControlName="adminAddress" placeholder="Address"></textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminCity'].valid   && adminSubmission}">
+                          <label for="">Admin City</label>
+                          <input type="text" class="form-control" placeholder="Admin city" formControlName="adminCity">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminState'].valid   && adminSubmission}">
+                          <label for="">Admin State</label>
+                          <input type="text" class="form-control" placeholder="Admin state" formControlName="adminState">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminZip'].valid   && adminSubmission}">
+                          <label for="">Admin Zip</label>
+                          <input type="text" class="form-control" placeholder="Admin zip" formControlName="adminZip">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['adminCountry'].valid   && adminSubmission}">
+                          <label for="">Admin Country</label>
+                          <input type="text" class="form-control" placeholder="Admin country" formControlName="adminCountry">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-7">
+                <div class="card">
+                  <div class="card-header">
+                    Admin credentials
+                  </div>
+                  <div class="card-body">
+                    <div class="col-md-12">
+                      <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['userEmail'].valid   && adminSubmission}">
+                        <label for="">User email</label>
+                        <input type="text" class="form-control" placeholder="Admin account email" formControlName="userEmail">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['userName'].valid   && adminSubmission}">
+                        <label for="">User name</label>
+                        <input type="text" class="form-control" placeholder="User name" formControlName="userName">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group" [ngClass]="{'has-error':!addAdmin.controls['userPassword'].valid   && adminSubmission}">
+                        <label for="">Password</label>
+                        <input type="text" class="form-control" placeholder="Password" formControlName="userPassword">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row pull-right">
+              <div class="col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary pull-right">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

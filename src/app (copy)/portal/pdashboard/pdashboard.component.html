@@ -1,0 +1,106 @@
+<app-pheader></app-pheader>
+<div class="app-body">
+  <app-psidebar *ngIf="token" [token]="token"></app-psidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-lg-4" *ngIf="token.userType == 4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket-loaded"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.totalapproved}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">Total Approved orders</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4" *ngIf="token.userType == 4">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.totalOrders}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">Total Orders</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3" *ngIf="token.userType == 3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.totalOrderStore}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">Total Orders received from stores</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3" *ngIf="token.userType == 3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.todayOrderStore}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">Today Orders received from stores</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3" *ngIf="token.userType == 3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.totalOrderMy}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">My total Orders</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3" *ngIf="token.userType == 3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="h1 text-muted text-right mb-4">
+                    <i class="icon-basket"></i>
+                  </div>
+                  <div class="h4 mb-0">{{dashboardInfo.todaysOrdersMy}}</div>
+                  <small class="text-muted text-uppercase font-weight-bold">My today Orders</small>
+                  <div class="progress progress-xs mt-3 mb-0">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>

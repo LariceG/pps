@@ -1,0 +1,113 @@
+<toaster-container></toaster-container>
+<header class="app-header navbar">
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#"></a>
+  <!-- <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button> -->
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+      <a hand class="nav-link" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+    </li>
+    <!-- <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="img/avatars/6.jpg" class="img-avatar" alt="Admin">
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item" (click)="logout()"><i class="fa fa-lock"></i> Logout</a>
+      </div>
+    </li> -->
+  </ul>
+  <button class="navbar-toggler aside-menu-toggler" type="button">
+    <!-- <span class="navbar-toggler-icon"></span> -->
+  </button>
+</header>
+
+
+
+<div class="app-body">
+  <div class="sidebar" style="height:600px;">
+    <nav class="sidebar-nav">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products"><i class="icon-speedometer"></i> Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/orders"><i class="icon-speedometer"></i> Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/cart"><i class="icon-speedometer"></i> Cart</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile/settings"><i class="icon-user"></i> Account settings</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/profile/orders">Profile</a></li>
+      <li class="breadcrumb-item active">Settings</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-header">
+                  Change password
+                </div>
+                <div class="card-body">
+                  <form class="m-t" [formGroup]="account" (ngSubmit)="onSubmit(account.value,account)">
+                    <div>
+                      <div class="form-group" [ngClass]="{'has-error':!account.controls['current_password'].valid && submitAttempt || account.controls['current_password'].hasError('required') && account.controls['current_password'].touched}">
+                        <input type="password" class="form-control" placeholder="Old Password" formControlName="current_password">
+                        <!-- <div class="input-group col-md-12 password-watch">
+                            <span class="input-group-addon" (click)="showPassword($event.target)">
+                              Show
+                            </span>
+                          </div> -->
+                           <span *ngIf="account.controls['current_password'].hasError('required') && submitAttempt || account.controls['current_password'].hasError('required') && account.controls['current_password'].touched">Old Password is required.</span>
+                          <span *ngIf="account.controls['current_password'].hasError('minlength') && submitAttempt">Minimum 6 characters required.</span>
+                       </div>
+                     <div class="form-group" [ngClass]="{'has-error':!account.controls['password'].valid && submitAttempt || account.controls['password'].hasError('required') && account.controls['password'].touched}">
+                       <input type="password" class="form-control" placeholder="New Password" formControlName="password">
+                       <!-- <div class="input-group col-md-12 password-watch">
+                         <span class="input-group-addon" (click)="showPassword($event.target)">
+                           Show
+                         </span>
+                       </div> -->
+                          <span *ngIf="account.controls['password'].hasError('required') && submitAttempt || account.controls['password'].hasError('required') && account.controls['password'].touched">New Password is required.</span>
+                          <span *ngIf="account.controls['password'].hasError('minlength') && submitAttempt">Minimum 6 characters required.</span>
+                      </div>
+                      <div class="form-group" [ngClass]="{ 'has-error':!account.controls['user_password_rpt'].valid   && submitAttempt || account.controls['user_password_rpt'].hasError('required') && account.controls['user_password_rpt'].touched}">
+                        <input type="password" class="form-control" placeholder="Confirm Password" formControlName="user_password_rpt">
+                        <!-- <div class="input-group col-md-12 password-watch">
+                          <span class="input-group-addon" (click)="showPassword($event.target)">
+                            Show
+                          </span>
+                        </div> -->
+                          <span *ngIf="account.controls['user_password_rpt'].hasError('required') && submitAttempt || account.controls['user_password_rpt'].hasError('required') && account.controls['user_password_rpt'].touched">Confirm Password is required.</span>
+                          <!-- <span *ngIf="!account.controls['user_password_rpt'].hasError('required') && !account.controls['user_password_rpt'].hasError('minlength')  && !account.controls.valid && submitAttempt">Password not matched.</span> -->
+                          <span *ngIf="!account.controls['password'].hasError('required') && !account.controls['user_password_rpt'].hasError('required') && !account.controls['password'].hasError('minlength')   && !account.controls['user_password_rpt'].hasError('minlength') && !account.valid && submitAttempt">Password not matched.</span>
+                      </div>
+                      <div>
+                        <button class="btn btn-primary">Change Password</button>
+                      </div>
+                </div>
+              </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </main>
+
+</div>

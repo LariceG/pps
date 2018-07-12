@@ -1,0 +1,62 @@
+<app-pheader></app-pheader>
+<div class="app-body">
+  <app-psidebar *ngIf="token" [token]="token"></app-psidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item "><a routerLink="/dashboard">Dashboard</a></li>
+      <li class="breadcrumb-item active"><a>List apls</a></li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div *ngIf="apdmLoading">
+            <div class="loader">
+              <div class="loader-inner ball-pulse">
+                <div class="my-loader"></div>
+                <div class="my-loader"></div>
+                <div class="my-loader"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" *ngIf="!apdmLoading">
+            <div class="card-header">
+              Apls
+            </div>
+            <div class="card-body">
+              <div class="table-responsive" *ngIf="!apdmLoading && (apdmList | json ) != '[]'">
+                <table class="table table-bordered">
+                  <tr>
+                    <th>Apl Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>City</th>
+                    <!-- <th>Action</th> -->
+                  </tr>
+                  <tr *ngFor="let apdm of apdmList | paginate: { itemsPerPage: perpage, currentPage: page, totalItems: totalItem }">
+                    <td>{{ apdm.apdmID}} </td>
+                    <td>{{ apdm.apdmFirstName}} {{ apdm.apdmLastName}} </td>
+                    <td>{{ apdm.apdmEmail}} </td>
+                    <td>{{ apdm.apdmCity}} </td>
+                    <!-- <td>
+                      <a (click)="DeleteConfirm(apdm.apdmID)" class="fa fa-remove icon-btn"></a>
+                      <a (click)="editProduct(apdm.apdmID)" class="fa fa-edit icon-btn"></a>
+                      <a (click)="assignStore(apdm.apdmID)" class="fa fa-plus icon-btn"></a>
+                    </td> -->
+                  </tr>
+                </table>
+              </div>
+                <div *ngIf="!apdmLoading && (apdmList | json ) == '[]'">
+                  No Records
+                </div>
+              </div>
+            </div>
+          </div>
+            <pagination-controls *ngIf="!apdmLoading" (pageChange)="page = getapdms($event)" maxSize="9" directionLinks="true" autoHide="true" previousLabel="Prev" nextLabel="Next" screenReaderPaginationLabel="Pagination" screenReaderPageLabel="page" screenReaderCurrentLabel="You're on page">
+          </pagination-controls>
+
+        </div>
+    </div>
+  </main>
+
+</div>

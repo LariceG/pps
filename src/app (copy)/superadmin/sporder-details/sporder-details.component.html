@@ -1,0 +1,60 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <toaster-container></toaster-container>
+  <app-spsidebar></app-spsidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Home</li>
+      <li class="breadcrumb-item"><a href="#">Admin</a></li>
+      <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;"><div class="animated fadeIn">
+        <div class="row">
+
+          <div class="col-lg-9">
+            <!-- {{Orderdetails | json }} -->
+            <h2>
+              <i *ngIf="Orderdetails.orderStatus == 1" class="icon-check"></i>
+              <i *ngIf="Orderdetails.orderStatus == 2" class="icon-ban"></i>
+              <i *ngIf="Orderdetails.orderStatus == 0" class="icon-clock"></i>
+              <span *ngIf="Orderdetails.orderStatus == 0">Pending</span>
+              <span *ngIf="Orderdetails.orderStatus == 1">Approved</span>
+              <span *ngIf="Orderdetails.orderStatus == 2">Denied</span>
+            </h2>
+            <p>Total Amount - ${{Orderdetails.orderTotal}}</p>
+            <p style="margin-bottom: 4px;">Date Placed - {{Orderdetails.orderAddedOn | date : 'short' }}</p>
+            <p style="margin-bottom: 4px;">Store id - {{Orderdetails.storeId}}</p>
+            <p>Store address - {{Orderdetails.storeName}}</p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Item name</th>
+                  <th>Item Id</th>
+                  <th>Item quantity</th>
+                  <th>Item Price</th>
+                  <th>Total Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of Orderdetails.items">
+                  <td>{{item.orderproductName}}</td>
+                  <td>{{item?.productVarItemId}}</td>
+                  <td>{{item.orderItemQty}}</td>
+                  <td>${{ item.orderItemPrice / item.orderItemQty}}</td>
+                  <td>${{item.orderItemPrice}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+  </main>
+</div>

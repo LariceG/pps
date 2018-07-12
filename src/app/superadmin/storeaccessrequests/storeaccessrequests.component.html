@@ -1,0 +1,170 @@
+<app-spheader></app-spheader>
+<div class="app-body">
+  <app-spsidebar></app-spsidebar>
+  <main class="main">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/admin-panel/list-orders/','approved']">Dashboard</a></li>
+      <li class="breadcrumb-item active">New store requests</li>
+    </ol>
+    <div class="container-fluid">
+      <div id="ui-view" style="opacity: 1;">
+        <div class="animated fadeIn">
+          <div class="card">
+            <div class="card-header">
+              System access requests
+            </div>
+            <div class="card-body">
+              <div *ngIf="Stores.length == 0">
+                No new Requests found
+              </div>
+              <div class="table-responsive" *ngIf="Stores.length != 0">
+                <table class="table table-bordered">
+                  <tr>
+                    <th>Store name</th>
+                    <th>Store email</th>
+                    <th>Store Mobile</th>
+                    <th>Store City</th>
+                    <th>Store Address</th>
+                    <th>Action</th>
+                  </tr>
+                  <tr *ngFor="let str of Stores; let i = index">
+                    <td><a (click)="openStore(i)">{{ str.sys_name }}</a></td>
+                    <td>{{ str.sys_mailEmail }}</td>
+                    <td>{{ str.sys_mailPhone }}</td>
+                    <td>{{ str.sys_city }}</td>
+                    <td>{{ str.sys_bussAddress }}</td>
+                    <td>
+                      <button (click)="req(1,str.sys_Id)" type="button" class="btn btn-primary">Approve</button>
+                      <button (click)="req(2,str.sys_Id)" type="button" class="btn btn-default">Deny</button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        Store Details
+        <span class="close" data-dismiss="modal"> &times; </span>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="">Name and Title</label><br>
+              {{ StoreExpanded.sys_name}}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="">Company  Name</label><br>
+              {{ StoreExpanded.sys_companyName}}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="">Business Address</label><br>
+              {{ StoreExpanded.sys_bussAddress}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">City</label><br>
+              {{ StoreExpanded.sys_city}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">State/Province</label><br>
+              {{ StoreExpanded.sys_state}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">Zip</label><br>
+              {{ StoreExpanded.sys_zip}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">Country</label><br>
+              {{ StoreExpanded.sys_country}}
+            </div>
+          </div>
+          <div class="col-md-12">
+            {{ StoreExpanded.StoreExpanded}}
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="">FEIN or Other Identifying Number</label><br>
+              {{ StoreExpanded.sys_ideNumber}}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="">Mailing Address:</label><br>
+              {{ StoreExpanded.sys_mailAddress}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">City</label><br>
+              {{ StoreExpanded.sys_mailCity}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">State/Province</label><br>
+              {{ StoreExpanded.sys_mailState}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">Zip</label><br>
+              {{ StoreExpanded.sys_mailZip}}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="">Phone Number</label><br>
+              {{ StoreExpanded.sys_mailPhone}} ext. {{ StoreExpanded.sys_mailExt}}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="">Email Address of Primary Contact:</label><br>
+              {{ StoreExpanded.sys_mailEmail}}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="">Number of Locations</label><br>
+              {{ StoreExpanded.sys_numberOfLoc}}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for=""> Any International? </label><br>
+            {{ StoreExpanded.sys_anyInternational}}
+          </div>
+
+          <div class="col-md-6">
+            <label for="">Annual Spend EAS/LP Products (optional)</label><br>
+            {{StoreExpanded.sys_annualSpendEas}}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
