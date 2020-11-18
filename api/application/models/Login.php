@@ -26,11 +26,15 @@ class Login extends CI_Model {
 			$query = 'SELECT * FROM pps_users as user';
 			if($usertype == 34) // can be 3 or 4
 			{
-				$query .= " WHERE (user.userName=" . $username . " OR user.userEmail=" . $username . ") AND user.userPassword= " . $password . " AND ( user.userType = 3 or user.userType = 4 or user.userType = 9 ) ".$status ;
+				$query .= " WHERE (user.userName=" . $username . " OR user.userEmail=" . $username . ") AND user.userPassword= " . $password . " and user.userType != 2  ".$status ;
+			}
+			else if($usertype == 1)
+			{
+				$query .= " WHERE (user.userName=" . $username . " OR user.userEmail=" . $username . ") AND user.userPassword= " . $password . " and user.userType = 1  ".$status ;
 			}
 			else
 			{
-				$query .= " WHERE (user.userName=" . $username . " OR user.userEmail=" . $username . ") AND user.userPassword= " . $password . " AND user.userType = " .$usertype." ".$status ;
+				$query .= " WHERE (user.userName=" . $username . " OR user.userEmail=" . $username . ") AND user.userPassword= " . $password . " and user.userType=2 ".$status ;
 			}
 
 			$query = $this->db->query($query);
@@ -119,6 +123,11 @@ class Login extends CI_Model {
 				{
 					$data['storeTableData']['storeUserId'] =  $id;
 					$this->db->insert($tablesecond,$data['storeTableData']);
+					//$getStoreUser = $this->db->get_where('pps_users',array('userId'=>$id))->row_array();$getStoreUser->userName
+					$messageData = 'You have created a new store '.$data['storeTableData']['storeName'];
+					$insertData = ['user_id'=>$id,'message'=>$messageData,'created_at'=>date('Y-m-d H:i:s')];
+					//print_r($insertData);die;
+					$this->db->insert('pps_notification',$insertData);
 					$response['success'] 	= true;
 					$response['userID'] 	= $id;
 					$response['data'] = 'Store added Successfully..';
@@ -478,7 +487,10 @@ class Login extends CI_Model {
 				$table = 'pps_store';
 				$field = 'storeUserId';
 			break;
-
+			case "region":
+				$table = 'pps_region';
+				$field = 'id';
+			break;
 			case "apdm":
 				$table = 'pps_distributor';
 				$field = 'apdmUserId';
@@ -487,6 +499,10 @@ class Login extends CI_Model {
 			case "admin":
 				$table = 'pps_admin';
 				$field = 'adminUserId';
+			break;
+			case "pps_marketing_users":
+				$table = 'pps_marketing_users';
+				$field = 'id';
 			break;
 
 			default:
@@ -544,7 +560,7 @@ class Login extends CI_Model {
 
 	public function getProductDetails($productId = null)
 	{
-		$this->db->select('prds.productCode, prds.productName, prds.productDescription, prds.productImage, prds.productPrice, prds.productCategory,prds.IsAvailable');
+		$this->db->select('prds.instructionFile ,prds.images ,prds.rad_visible,prds.aeo_visible,prds.seven_visible,prds.ecommerce_visible,prds.fmd_visible, prds.productCode, prds.productName, prds.productDescription, prds.productImage, prds.productPrice, prds.productCategory,prds.IsAvailable,prds.UPC');
 		$this->db->from('pps_products as prds');
 		$this->db->where('prds.productID',$productId);
 		$query = $this->db->get();
@@ -555,6 +571,8 @@ class Login extends CI_Model {
 			$data = $query->row();
 			$data;
 			$data->productVariations  = $this->productVariations($productId);
+			$data->productGroupPrices  = $this->productGroupPrices($productId);
+			$data->productTierPrices  = $this->productTierPrices($productId);
 			$db_error = $this->db->error();
 			if ($db_error['code'] != 0) {
 					$response['success'] = false;
@@ -599,7 +617,58 @@ class Login extends CI_Model {
 		}
 		return $response;
 	}
-
+	public function productGroupPrices($productID)
+	{
+		$this->db->select('*');
+		$this->db->from('pps_products_group_price');
+		$this->db->where('productID',$productID);
+		$query = $this->db->get();
+		$data = array();
+		if ($query->num_rows() > 0)
+		{
+			$data = $query->result();
+			$db_error = $this->db->error();
+			if ($db_error['code'] != 0) {
+				$response['success'] = false;
+				$response['error_message'] = $db_error['message'];
+			}
+			else
+			{
+				$response = $data;
+			}
+		}
+		else
+		{
+			$response = '';
+		}
+		return $response;
+	}
+	public function productTierPrices($productID)
+	{
+		$this->db->select('*');
+		$this->db->from('pps_products_tier_price');
+		$this->db->where('productID',$productID);
+		$query = $this->db->get();
+		$data = array();
+		if ($query->num_rows() > 0)
+		{
+			$data = $query->result();
+			$db_error = $this->db->error();
+			if ($db_error['code'] != 0) {
+				$response['success'] = false;
+				$response['error_message'] = $db_error['message'];
+			}
+			else
+			{
+				$response = $data;
+			}
+		}
+		else
+		{
+			$response = '';
+		}
+		return $response;
+	}
 	public function getAllGenres($searchData = null)
 	{
 		$this->db->select('genreId,genreName');
@@ -864,7 +933,7 @@ class Login extends CI_Model {
 
 	public function getAllAddedProductsFromAddtoCartByUserId($userId)
 	{
-			$this->db->select('ppcadd.bkId,ppcadd.userId,ppcadd.productId,ppcadd.quantity,prds.productCode, prds.productName, prds.productDescription, prds.productImage, prds.productPrice, prc.catName,vars.productVarDesc,vars.productVarPrice,ppcadd.variation_id');
+			$this->db->select('ppcadd.bkId,ppcadd.userId,ppcadd.productId,ppcadd.quantity,prds.productCode, prds.productName, prds.productDescription, prds.productImage, prds.productPrice, prc.catName,vars.productVarDesc,vars.productVarPrice,vars.productVarItemId,ppcadd.variation_id');
 			$this->db->from('addtocart as ppcadd');
 			$this->db->join('products as prds', 'prds.productID = ppcadd.productId', 'left');
 			$this->db->join('cats as prc', 'prc.catId = prds.productCategory', 'left');
@@ -1028,23 +1097,55 @@ class Login extends CI_Model {
 
 	public function saveMyOrders($userType,$userId,$orderlevel,$for)
 	{
-		$rand 				= rand(0,9999);
-		$orderNumber		=	date('Ymd').$rand;
+		$rand 				= rand(100,1000);
+		$LastorderNumber = $this->db->order_by('orderId','DESC')->get_where('pps_orders')->row_array();
+		$order = $LastorderNumber['orderId']+1;
+		if($LastorderNumber['orderId'] > '10000')
+		{
+			$orderNo		=	'PR'.date('y').$order;
+		}
+		else
+		{
+			$orderNo		=	'PR'.date('ym').$order;
+		}
+		$checkorderNumber = $this->db->get_where('pps_orders',array('orderNumber'=>$orderNo))->row_array();
+		if(!empty($checkorderNumber))
+		{
+			if($LastorderNumber['orderId'] > '10000')
+			{
+				$orderNumber		=	'PR'.date('y').$order;
+			}
+			else
+			{
+				$orderNumber		=	'PR'.date('ym').$order;
+			}
+		}
+		else
+		{
+			$orderNumber = $orderNo;
+		}
 		if(!empty($userId))
 		{
 			$resultData = $this->getAllAddedProductsFromAddtoCartByUserId($userId);
+			if($for != '')
 			$stt = $this->getrow("pps_store",array('storeUserId' => $for));
+				else
+			$stt = $this->getrow("pps_store",array('storeUserId' => $userId));
 			// echo "<pre>"; print_r($resultData['data']); echo "</pre>"; die;
 			if(!empty($resultData['data']))
 			{
+				//print_r($resultData['data']);die;
 				$orderItemPrice = 0;
 				$notAvl = 0;
+				$notAvlAr = array();
 				foreach($resultData['data'] as $key=>$val)
 				{
 					$orderItemPrice += $val->orderProductPrice;
 					$cls = $this->getresult("pps_products_classes",array('productClass' => $stt->storeClass , "productID" => $val->productId));
 					if(empty($cls))
 					{
+						$p = $this->getrow("pps_products",array("productID" => $val->productId));
+						$notAvlAr[] = $p->productName;
 						$notAvl = 1;
 					}
 					//$orderDataMerge[] = array_merge($resultData['data'][$key],$arr);
@@ -1053,7 +1154,8 @@ class Login extends CI_Model {
 				if($notAvl == 1)
 				{
 					$response['notAvl'] = true;
-					$response['data'] 	 = 'Some Products Are not available to this store';
+					$response['products'] = implode(',',$notAvlAr);
+					$response['data'] 	 = 'Following Products are not available to this store';
 					return $response;
 				}
 				// echo $orderItemPrice;
@@ -1064,7 +1166,7 @@ class Login extends CI_Model {
 						'orderTotal'=>$orderItemPrice,
 						'orderUserId'=>$userId,
 						'orderActive'=>1,
-						'orderAddedOn'=>date('Y-m-d h:i'),
+						'orderAddedOn'=>date('Y-m-d H:i:s'),
 						'orderAddedBy'=>$userId,
 						'orderAddedByType'=>$userType,
 						'orderLevel' => $orderlevel
@@ -1080,8 +1182,9 @@ class Login extends CI_Model {
 					$orderDatas['orderUserId'] = $userId;
 					$orderDatas['addedBy'] = 'store';
 				}
-
+        $orderDatas['order_type'] = 'Web';
 				$this->db->insert('orders', $orderDatas);
+				//echo $this->db->last_query();die;
 				if ($this->db->affected_rows() > 0)
 				{
 						$orderId 	= $this->db->insert_id();
@@ -1125,10 +1228,11 @@ class Login extends CI_Model {
 				$orderItemProductVarId		= 	 $val->variation_id;
 
 				$orderItemData = array(
-					'orderItemOrderId'=>$orderId,
-					'orderItemProductId'=>$orderItemproductId,
-					'orderItemProductVarId'=>$orderItemProductVarId,
-					// 'productVarItemId'=>$val->productVarItemId,
+					'orderItemOrderId'      => $orderId,
+					'orderItemProductId'    => $orderItemproductId,
+					'orderItemProductVarId' => $orderItemProductVarId,
+					'productVarDesc_safe' 				=> $val->productVarDesc,
+					'productVarItemId_safe' 			=> $val->productVarItemId,
 
 					'orderItemQty'=>$orderItemQty,
 					'orderItemPrice'=>$orderItemPrice,
@@ -1338,19 +1442,18 @@ class Login extends CI_Model {
 	function sendEmail($email,$name,$template,$subject)	{
 
 			$this->config_email = Array(
-				'protocol'  => "ssl",
-				'smtp_host' => "mail.1wayit.com",
-				'smtp_port' => '25',
-				'smtp_user' => 'gurdeep@1wayit.com',
-				'smtp_pass' => 'Gurdeep@786',
-				'mailtype'  => "html",
-				'wordwrap'  => TRUE,
-				'crlf'  	=> '\r\n',
-				'charset'   => "utf-8"
+				'protocol'  => 'STARTTLS',
+				'smtp_host' => 'smtp.office365.com',
+			  'smtp_user' => 'devops@productprotectionsolutions.com',
+			  'smtp_pass' => 'Pps123!@#',
+				'smtp_port' => 587,
+			  'mailtype'  => 'html',
+			  'wordwrap'  => TRUE,
+				'charset' => 'iso-8859-1',
         );
 		$this->email->initialize($this->config_email);
 		$this->email->set_newline("\r\n");
-		$this->email->from('info@gmail.com');
+		$this->email->from('no-reply@productprotectionsolutions.com','PPS');
 		$this->email->to($email);
 		$this->email->subject($subject);
 		$this->email->message($template);
@@ -1359,29 +1462,101 @@ class Login extends CI_Model {
 		return true;
     }
 
-		function sendEmailMultiple($email,$name,$template,$subject)	{
+		function sendEmailMultiple2($email,$name,$template,$subject)	{
 
-				$this->config_email = Array(
-					'protocol'  => "smtp",
-					'smtp_host' => "ssl://smtp.googlemail.com",
-					'smtp_port' => '465',
-					'smtp_user' => 'nitindeveloper23@gmail.com',
-					'smtp_pass' => 'nitin@123',
-					'mailtype'  => "html",
-					'wordwrap'  => TRUE,
-					'crlf'  	=> '\r\n',
-					'charset'   => "utf-8"
-					);
-			$this->email->initialize($this->config_email);
-			$this->email->set_newline("\r\n");
-			$this->email->from('info@gmail.com','PPS');
-			$this->email->to($email);
-			$this->email->subject($subject);
-			$this->email->message($template);
+			$config = Array(
+			  'protocol'  => 'smtp',
+			  'smtp_host' => 'ssl://smtp.googlemail.com',
+			  'smtp_port' => 465,
+			  'smtp_user' => 'pps.keepsafe@gmail.com',
+			  'smtp_pass' => 'K3ep5@fe',
+			  'mailtype'  => 'html',
+			  'wordwrap'  => TRUE,
+				'charset' => 'iso-8859-1',
+			  );
+        //
+				// $this->config_email = Array(
+				// 	'protocol'  => "ssl",
+	      //   'smtp_host' => "smtpout.productprotectionsolutions.com",
+	      //   'smtp_port' => '25',
+	      //   'smtp_user' => 'no-reply@productprotectionsolutions.com',
+	      //   'smtp_pass' => 'pps123!@',
+	      //   'mailtype'  => "html",
+	      //   'wordwrap'  => TRUE,
+	      //   'crlf'  	=> '\r\n',
+	      //   'charset'   => "utf-8"
+				// 	);
+
+        // $this->config_email = Array(
+  			// 	'protocol'  => "ssl",
+  			// 	'smtp_host' => "mail.1wayit.com",
+  			// 	'smtp_port' => '25',
+  			// 	'smtp_user' => 'gurdeep@1wayit.com',
+  			// 	'smtp_pass' => 'Gurdeep@786',
+  			// 	'mailtype'  => "html",
+  			// 	'wordwrap'  => TRUE,
+  			// 	'crlf'  	=> '\r\n',
+  			// 	'charset'   => "utf-8"
+        //   );
+
+          // $config = Array(
+          //   'protocol' => 'smtp',
+          //   'smtp_host' => 'ssl://smtp.googlemail.com',
+          //   'smtp_port' => 465,
+          //   'smtp_user' => 'nitindeveloper23@gmail.com',
+          //   'smtp_pass' => 'nitin@123',
+          //   'mailtype' => 'html',
+          //   'charset' => 'iso-8859-1',
+          //   'wordwrap' => TRUE
+    			// );
+
+
+			$ci = & get_instance();
+		  $ci->email->set_mailtype("html");
+			$ci->load->library('email');
+		  $ci->email->set_newline("\r\n");
+			$ci->email->from('pps.keepsafe@gmail.com','PPS');
+			$ci->email->to($email);
+			$ci->email->subject($subject);
+			$ci->email->message($template);
 			// echo "<pre>";print_r($this->email);die;
 			$this->email->send();
 			return true;
-			}
+	}
+
+
+	public function sendEmailMultiple($email,$name,$template,$subject)
+	{
+		foreach ($email as $key => $value)
+		{
+			$url    = 'https://api.sendgrid.com/';
+		                  $user   = 'antbd';
+		                  $pass   = 'Pps123!@#';
+
+		       $params = array(
+		          'api_user' => $user,
+		          'api_key' => $pass,
+		          'to' => $value,
+		          'subject' => $subject,
+		          'html' => $template,
+		          'text' => 'Hello',
+		          'from' => 'no-reply@productprotectionsolutions.com',
+		          'fromname'  => 'PPS'
+
+		      );
+
+		      $request = $url . 'api/mail.send.json';
+		      $session = curl_init($request);
+		      curl_setopt($session, CURLOPT_POST, true);
+		      curl_setopt($session, CURLOPT_POSTFIELDS, $params);
+		      curl_setopt($session, CURLOPT_HEADER, false);
+		      curl_setopt($session, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+		      curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+		      $response = curl_exec($session);
+		      curl_close($session);
+		}
+		return true;
+	}
 
 	function getSystemStoreDetailById($storeid,$status)
 	{
@@ -1615,7 +1790,7 @@ class Login extends CI_Model {
 	{
 		$this->db->select('ppsord.*');
 		$this->db->from('pps_orders as ppsord');
-		$this->db->where('ppsord.orderStatus',1);
+		$this->db->where('ppsord.orderStatus !=',0);
 		$result = $this->db->get();
 		//echo $this->db->last_query(); die;
 		$totalapproved = $result->num_rows();

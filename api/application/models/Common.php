@@ -41,7 +41,17 @@ class Common extends CI_Model {
       else
       return false;
     }
-
+    public function getStoreDetails($order_no)
+    {
+        $this->db->select('pps_store.storeName,pps_users.deviceId,pps_users.deviceType,pps_users.notficationStatus,pps_orders.addedBy');
+        $this->db->from('pps_orders');
+        $this->db->join('pps_store','pps_orders.orderUserId=pps_store.storeUserId','left');
+        $this->db->join('pps_users','pps_orders.orderAddedBy=pps_users.userId','left');
+        $this->db->where('pps_orders.orderNumber', $order_no);
+        $result = $this->db->get();
+        //echo $this->db->last_query();die;
+        return $result->row();
+    }
   	public function update($where,$data,$table)
   	{
   		$this->db->where($where);
@@ -52,7 +62,31 @@ class Common extends CI_Model {
   		else
   			return '0';
   	}
+    public function getAllAdminApdmOrdersPdf()
+    {
 
+      $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
+      $this->db->from('pps_orders as ordr');
+      $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+      $this->db->join('pps_store as str','str.storeUserId = ordr.orderUserId','left');
+      $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+      $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+      if(isset($_GET['order_no']))
+      {
+        $orderno = explode(',',$_GET['order_no']);
+        $this->db->where_in('ordr.orderNumber',$orderno);
+      }
+      else
+      {
+        $this->db->where('ordr.orderNumber !=',NULL);
+      }
+      $this->db->order_by('ordr.orderAddedOn','desc');
+      $result = $this->db->get();
+      $result2 = $result->result();
+
+      return $result2;
+
+    }
     public function delete($table,$where)
   	{
   		$this->db->where($where);
@@ -1443,7 +1477,16 @@ public function storeDetails($id)
   $result = $result->row();
   return $result;
 }
-
+public function regionDetails($id)
+{
+  $this->db->select('region.*');
+  $this->db->from('pps_region as region');
+  $this->db->where('region.id',$id);
+  $result = $this->db->get();
+  $result = $result->row();
+  //echo $this->db->last_query();die;
+  return $result;
+}
 public Function StoreList($start,$perPage,$text)
 {
   $this->db->select('str.*');
@@ -1486,10 +1529,120 @@ public Function StoreList($start,$perPage,$text)
   }
 
 }
+public Function regionList($start,$perPage,$text)
+{
+  $this->db->select('region.*');
+  $this->db->from('pps_region as region');
 
+  if($text != 'all')
+  {
+    $where = " (region.regionName LIKE '%$text%' or  region.regionEmail LIKE '%$text%') ";
+    $this->db->where($where);
+  }
+
+  $result = $this->db->get();
+  $num_rows = $result->num_rows();
+
+
+  $this->db->select('region.*');
+  $this->db->from('pps_region as region');
+  if($text != 'all')
+  {
+    $where = " (region.regionName LIKE '%$text%' or  region.regionEmail LIKE '%$text%') ";
+    $this->db->where($where);
+  }
+  //echo $this->db->last_query(); die;
+  $this->db->limit($perPage, $start);
+  $result = $this->db->get();
+  $result2 = $result->result();
+
+  if(!empty($result2))
+  {
+    return array
+    (
+     'total_rows'   => $num_rows,
+     'result'       => $result2
+    );
+  }
+
+}
+
+public Function NotificationCount()
+{
+  $this->db->select('nt.id');
+  $this->db->from('pps_notification as nt');
+  $this->db->where('nt.read_status','0');
+
+  $result = $this->db->get();
+  $num_rows = $result->num_rows();
+    return array
+    (
+     'total_rows'   => $num_rows,
+    );
+  }
+
+  public Function subscribedUsers()
+  {
+    $this->db->select('*');
+    $this->db->from('pps_subscribers');
+    $result = $this->db->get();
+  //  echo $this->db->last_query();die;
+    $data = $result->result();
+      return array
+      (
+       'success' =>true,
+       'users'   => $data,
+      );
+    }
+    public Function marketingUsers()
+    {
+      $this->db->select('*');
+      $this->db->from('pps_marketing_users');
+      $result = $this->db->get();
+    //  echo $this->db->last_query();die;
+      $data = $result->result();
+        return array
+        (
+         'success' =>true,
+         'users'   => $data,
+        );
+      }
+
+public Function NotificationList($start,$perPage)
+{
+  $this->db->select('nt.*');
+  $this->db->from('pps_notification as nt');
+  $this->db->order_by('nt.id','DESC');
+  $result = $this->db->get();
+  $num_rows = $result->num_rows();
+
+
+  $this->db->select('nt.*');
+  $this->db->from('pps_notification as nt');
+
+  //echo $this->db->last_query(); die;
+  $this->db->limit($perPage, $start);
+  $result = $this->db->get();
+  $result2 = $result->result();
+
+  foreach ($result2 as $key => $value) {
+    $data = ['read_status' => '1'];
+    $this->db->where('id',$value->id);
+    $this->db->update('pps_notification',$data);
+  }
+  if(!empty($result2))
+  {
+    return array
+    (
+     'total_rows'   => $num_rows,
+     'result'       => $result2
+    );
+  }
+
+}
 public Function adpdmList($start,$perPage,$type,$text = null)
 {
-  $this->db->select('dst.*,usr.userType');
+  $this->db->select('dst.*,usr.userType,usr.deviceId,usr.deviceType');
   $this->db->from('pps_distributor as dst');
   $this->db->join('pps_users as usr','usr.userId = dst.apdmUserId','inner');
   $this->db->where('usr.userStatus','1');
@@ -1503,7 +1656,7 @@ public Function adpdmList($start,$perPage,$type,$text = null)
   $num_rows = $result->num_rows();
 
 
-  $this->db->select('dst.*,usr.userType');
+  $this->db->select('dst.*,usr.userType,usr.deviceId,usr.deviceType');
   $this->db->from('pps_distributor as dst');
   $this->db->join('pps_users as usr','usr.userId = dst.apdmUserId','inner');
   $this->db->where('usr.userStatus','1');
@@ -1532,7 +1685,7 @@ public Function adpdmList($start,$perPage,$type,$text = null)
 
 public Function exAplList($start,$perPage,$type,$text = null)
 {
-  $this->db->select('dst.*,usr.userType');
+  $this->db->select('dst.*,usr.userType,usr.deviceId,usr.deviceType');
   $this->db->from('pps_exapl as dst');
   $this->db->join('pps_users as usr','usr.userId = dst.apdmUserId','inner');
   $this->db->where('usr.userStatus','1');
@@ -1546,7 +1699,7 @@ public Function exAplList($start,$perPage,$type,$text = null)
   $num_rows = $result->num_rows();
 
 
-  $this->db->select('dst.*,usr.userType');
+  $this->db->select('dst.*,usr.userType,usr.deviceId,usr.deviceType');
   $this->db->from('pps_exapl as dst');
   $this->db->join('pps_users as usr','usr.userId = dst.apdmUserId','inner');
   $this->db->where('usr.userStatus','1');
@@ -1600,6 +1753,37 @@ public function commonInsertData($data,$type)
 {
 	switch ($type)
     {
+    case "pps_region":
+			$table = 'pps_region';
+		break;
+    case "storeassign":
+			$table = 'pps_region_store';
+		break;
+    case "regionassign":
+			$table = 'pps_apdmAssign_region';
+      $getStores = $this->db->get_where('pps_region_store',array('region_id'=>$data['region_id']))->result_array();
+      foreach ($getStores as $key => $getStore) {
+        $storeData = ['apdmID'=>$data['apdm_id'],'storeId'=>$getStore['store_id']];
+        $checkStore = $this->db->get_where('pps_apdm_assigns',array('apdmID'=>$data['apdm_id'],'storeId'=>$getStore['store_id']))->row_array();
+        if(!$checkStore)
+        {
+          $this->db->insert('pps_apdm_assigns',$storeData);
+        }
+      }
+
+		break;
+    case "exregionassign":
+			$table = 'pps_exaplAssign_region';
+      $getStores = $this->db->get_where('pps_region_store',array('region_id'=>$data['region_id']))->result_array();
+      foreach ($getStores as $key => $getStore) {
+        $storeData = ['apdmID'=>$data['apdm_id'],'storeId'=>$getStore['store_id']];
+         $checkStore = $this->db->get_where('pps_exapl_assigns',array('apdmID'=>$data['apdm_id'],'storeId'=>$getStore['store_id']))->row_array();
+        if(!$checkStore)
+        {
+          $this->db->insert('pps_exapl_assigns',$storeData);
+        }
+      }
+		break;
 		case "mainCat":
 			$table = 'pps_category';
 		break;
@@ -1646,7 +1830,6 @@ public function commonInsertData($data,$type)
 	}
 	return $response;
 }
-
 public function commonDeleteData($type,$id)
 {
 	switch ($type)
@@ -1655,12 +1838,43 @@ public function commonDeleteData($type,$id)
 			$table = 'pps_category';
 			$field = 'CategoryName';
 		break;
+  case "removeAsignRegion":
+    $table = 'pps_apdmAssign_region';
+    $field = 'id';
+    $getRegion = $this->db->get_where('pps_apdmAssign_region',array('id'=>$id))->row_array();
+    $getStores = $this->db->get_where('pps_region_store',array('region_id'=>$getRegion['region_id']))->result_array();
+    foreach ($getStores as $key => $getStore) {
+      $this->db->where('storeId',$getStore['store_id']);
+      $this->db->delete('pps_apdm_assigns');
+    }
+  break;
+  case "removeAsignExRegion":
+    $table = 'pps_exaplAssign_region';
+    $field = 'id';
+    $getRegion = $this->db->get_where('pps_exaplAssign_region',array('id'=>$id))->row_array();
+    $getStores = $this->db->get_where('pps_region_store',array('region_id'=>$getRegion['region_id']))->result_array();
+    foreach ($getStores as $key => $getStore) {
+      $this->db->where('storeId',$getStore['store_id']);
+      $this->db->delete('pps_exapl_assigns');
+    }
+  break;
+  case "removeAsignRegionStore":
+    $table = 'pps_region_store';
+    $field = 'id';
+  break;
 
 		case "subCat":
 			$table = 'pps_subcategory';
 			$field = 'subCategoryId';
 		break;
-
+    case "marketing_users":
+      $table = 'pps_marketing_users';
+      $field = 'id';
+    break;
+    case "pps_subscribers":
+      $table = 'pps_subscribers';
+      $field = 'id';
+    break;
 	    case "product":
 			$table = 'pps_products';
 			$field = 'productID';
@@ -1675,7 +1889,14 @@ public function commonDeleteData($type,$id)
 			$table = 'pps_store';
 			$field = 'storeUserId';
 		break;
-
+    case "region":
+			$table = 'pps_region';
+			$field = 'id';
+		break;
+    case "notification":
+			$table = 'pps_notification';
+			$field = 'id';
+		break;
 		case "apdm":
 			$table = 'pps_distributor';
 			$field = 'apdmID';
@@ -1716,7 +1937,14 @@ public function commonDeleteData($type,$id)
       $table = 'pps_store';
       $field = 'storeUserId';
     break;
-
+    case "bulkregions":
+      $table = 'pps_region';
+      $field = 'id';
+    break;
+    case "bulkNotifications":
+      $table = 'pps_notification';
+      $field = 'id';
+    break;
     case "bulkApls":
       $table = 'pps_distributor';
       $field = 'apdmID';
@@ -1725,6 +1953,16 @@ public function commonDeleteData($type,$id)
     case "bulkExApls":
       $table = 'pps_exapl';
       $field = 'apdmID';
+    break;
+
+    case "logStatus":
+      $table = 'pps_status_log';
+      $field = 'logId';
+    break;
+
+    case "inssheet":
+      $table = 'pps_setting_values';
+      $field = 'setId';
     break;
 
 		default:
@@ -1775,6 +2013,11 @@ public function commonDeleteData($type,$id)
 
       $this->db->where(array('userId'=>$id));
   		$this->db->delete('pps_users');
+      //$getStoreUser = $this->db->get_where('pps_users',array('userId'=>$id))->row_array();$getStoreUser->userName
+      $messageData = 'You have deleted a store '.$store->storeName;
+      $insertData = ['user_id'=>$store->storeUserId,'message'=>$messageData,'created_at'=>date('Y-m-d H:i:s')];
+      //print_r($insertData);die;
+      $this->db->insert('pps_notification',$insertData);
     }
 
 
@@ -1793,9 +2036,19 @@ public function commonDeleteData($type,$id)
 
         $this->db->where(array('userId'=>$value));
     		$this->db->delete('pps_users');
+
+        //$getStoreUser = $this->db->get_where('pps_users',array('userId'=>$id))->row_array();$getStoreUser->userName
+        $messageData = 'You have deleted a store '.$store->storeName;
+        $insertData = ['user_id'=>$store->storeUserId,'message'=>$messageData,'created_at'=>date('Y-m-d H:i:s')];
       }
       $this->db->where_in('storeUserId', $id);
   		$this->db->delete('pps_store');
+    }
+    else if($type == 'bulkNotifications')
+    {
+      $id = explode('_',$id);
+      $this->db->where_in('id', $id);
+  		$this->db->delete('pps_notification');
     }
     else if($type == 'bulkExApls')
     {
@@ -1944,12 +2197,53 @@ public function buildTree(array $elements, $parentId = 0) {
     }
     return $branch;
 }
+public function getMasterCatss()
+{
+  $this->db->select('pps_cats.* ,b.catName as parentname');
+  $this->db->from('pps_cats');
+  $this->db->join('pps_cats as b','pps_cats.catParent = b.catId','left');
+  $this->db->where('pps_cats.catParent',0);
+  $query = $this->db->get();
+  $parentCategories = $query->result();
+  //echo "<pre>";print_r($parentCategories);
+  $response = array();
+  $i = 0;
+  foreach( $parentCategories as $key=>$value)
+  {
+   $response[$i] = $value;
+   $i = $i + 1;
+   $this->db->select('pps_cats.* ,b.catName as parentname');
+   $this->db->from('pps_cats');
+   $this->db->join('pps_cats as b','pps_cats.catParent = b.catId','left');
+   $this->db->where('pps_cats.catParent',$value->catId);
+   $query = $this->db->get();
+   $subCategories = $query->result();
 
+     foreach( $subCategories as $keyy=>$valuee)
+     {
+        $response[$i] = $valuee;
+        $i = $i + 1;
+        $this->db->select('pps_cats.* ,b.catName as parentname');
+        $this->db->from('pps_cats');
+        $this->db->join('pps_cats as b','pps_cats.catParent = b.catId','left');
+        $this->db->where('pps_cats.catParent',$valuee->catId);
+        $query = $this->db->get();
+        $subCategories = $query->result();
+        foreach( $subCategories as $keyy=>$valuee)
+        {
+         $response[$i] = $valuee;
+         $i = $i + 1;
+        }
+     }
+  }
+  return $response;
+}
 public function getCatss()
 {
   $this->db->select('pps_cats.* ,b.catName as parentname');
   $this->db->from('pps_cats');
   $this->db->join('pps_cats as b','pps_cats.catParent = b.catId','left');
+  $this->db->where('pps_cats.rad_visible',1);
   $this->db->where('pps_cats.catParent',0);
   $query = $this->db->get();
   $parentCategories = $query->result();
@@ -2017,6 +2311,39 @@ public function productVariationInsert($data,$type)
     $productClasses = $data['productClasses'];
 		unset($data['productClasses']);
 
+    $productUpc = $data['productUpc'];
+		unset($data['productUpc']);
+    $productGroupPriceData = $data['productGroupPriceData'];
+		unset($data['productGroupPriceData']);
+    $productTierPriceData = $data['productTierPriceData'];
+		unset($data['productTierPriceData']);
+    $images = $data['images'];
+    $data['is_visible'] = '1';
+    if(isset($data['rad_portal']))
+    {
+      // if($data['rad_visible'] == '1')
+      // {
+      //   $data['is_visible'] = '1';
+      // }
+      // else
+      // {
+      //   $data['is_visible'] = '0';
+      // }
+      unset($data['fmd_portal']);
+      //unset($data['fmd_visible']);
+
+      unset($data['seven_portal']);
+      //unset($data['seven_visible']);
+
+      unset($data['ecommerce_portal']);
+      //unset($data['ecommerce_visible']);
+
+      unset($data['aeo_portal']);
+      //unset($data['aeo_visible']);
+
+      unset($data['rad_portal']);
+      //unset($data['rad_visible']);
+    }
 		if(isset($data['productID']))
 		{
   		$id = $data['productID'];
@@ -2027,10 +2354,15 @@ public function productVariationInsert($data,$type)
   		$msg = 'Updated successfully';
 
       $this->delete('pps_products_classes',array('productID'=>$id));
+      $this->delete('pps_products_upcs',array('productID'=>$id));
+      $this->delete('pps_products_group_price',array('productID'=>$id));
+      $this->delete('pps_products_tier_price',array('productID'=>$id));
 		}
 		else
 		{
+      //print_r($data);die;
   		$this->db->insert('pps_products',$data);
+    //  echo $this->db->last_query();
   		$insert_id = $this->db->insert_id();
   		$msg = 'Added successfully';
 		}
@@ -2048,7 +2380,27 @@ public function productVariationInsert($data,$type)
 				);
 				$this->db->insert('pps_products_variations',$proVartion);
 			}
-
+      foreach($productGroupPriceData as $key=>$val)
+			{
+				$proPriceData = array(
+          'product_code'=>$val['product_code'],
+					'productCustomerGroup'=>$val['productCustomerGroup'],
+					'productGroupPrice'=>$val['productGroupPrice'],
+					'productID'=>$insert_id,
+				);
+				$this->db->insert('pps_products_group_price',$proPriceData);
+			}
+      foreach($productTierPriceData as $key=>$val)
+			{
+				$tierPriceData = array(
+          'product_code'=>$val['product_code'],
+					'productCustomerTierGroup'=>$val['productCustomerTierGroup'],
+          'productTierPrice'=>$val['productTierPrice'],
+					'productTierPriceQuantity'=>$val['productTierPriceQuantity'],
+					'productID'=>$insert_id,
+				);
+				$this->db->insert('pps_products_tier_price',$tierPriceData);
+			}
       foreach($productClasses as $key=>$val)
       {
         $proClass = array(
@@ -2056,6 +2408,15 @@ public function productVariationInsert($data,$type)
 					'productID'=>$insert_id,
 				);
 				$this->db->insert('pps_products_classes',$proClass);
+      }
+
+      foreach($productUpc as $key => $val)
+      {
+        $proClass = array(
+					'upc'=> $val['upc'] ,
+					'productID'=>$insert_id,
+				);
+				$this->db->insert('pps_products_upcs',$proClass);
       }
 			$response['success'] = true;
 			$response['productID'] = $insert_id;
@@ -2112,8 +2473,7 @@ public Function productList($start,$perPage,$catID,$cat,$store)
     );
   }
 }
-
-public Function productListNew($start,$perPage,$catID,$cat,$store,$text,$LoggedIn)
+public Function productListNewRad($start,$perPage,$catID,$cat,$store,$text,$LoggedIn)
 {
 
   // public function getrow($tbl,$whr)
@@ -2141,6 +2501,7 @@ public Function productListNew($start,$perPage,$catID,$cat,$store,$text,$LoggedI
   $this->db->where('pps.productCategory',$cat);
   if($store == true)
   $this->db->where('pps.IsActive',1);
+  //$this->db->where('pps.rad_visible',1);
 
   if($text != '')
   {
@@ -2176,6 +2537,108 @@ public Function productListNew($start,$perPage,$catID,$cat,$store,$text,$LoggedI
   $this->db->where('pps.productCategory',$cat);
   if($store == true)
   $this->db->where('pps.IsActive',1);
+//  $this->db->where('pps.rad_visible',1);
+  //$this->db->where('pps.is_visible',1);
+
+  if($text != '')
+  {
+    $where = "(pps.productName LIKE '%$text%' or  pps.productCode LIKE '%$text%' or pps.productDescription LIKE '%$text%' or pps.productCategory LIKE  '%$text%')";
+    $this->db->where($where);
+  }
+
+  // if(!empty($dt))
+  // {
+  //   $this->db->where_in('pps.productCategory',$dt);
+  // }
+  if($LoggedIn !='' && $LoggedIn !='all')
+  {
+    $this->db->where('ps.productClass',$store->storeClass);
+  }
+  if($text == '')
+  {
+    $this->db->limit($perPage, $start);
+  }
+  $this->db->group_by('productID');
+  $result = $this->db->get();
+  // echo $this->db->last_query(); die;
+  $result2 = $result->result();
+
+  if(!empty($result2))
+  {
+    return array
+    (
+     'total_rows'   => $num_rows,
+     'result'       => $result2
+    );
+  }
+}
+public Function productListNew($start,$perPage,$catID,$cat,$store,$text,$LoggedIn)
+{
+
+  // public function getrow($tbl,$whr)
+  if($LoggedIn !='' && $LoggedIn !='all')
+  $store = $this->getrow('pps_store',array('storeUserId'=>$LoggedIn));
+
+  // echo "dsdsa";
+  // echo $this->db->last_query();
+  // print_r($store);
+  //
+  $dt = '';
+  if(!empty($catID))
+  {
+      $dt = $this->getCategoryParentChild($catID);
+  }
+  $this->db->select('pps.*');
+  $this->db->from('pps_products as pps');
+
+  if($LoggedIn !='' && $LoggedIn !='all')
+  {
+    $this->db->join('pps_products_classes as ps','pps.productID = ps.productID');
+  }
+
+  if($cat !='' && $cat !='all')
+  $this->db->where('pps.productCategory',$cat);
+  if($store == true)
+  $this->db->where('pps.IsActive',1);
+  $this->db->where('pps.rad_visible',1);
+  $this->db->where('pps.is_visible',1);
+
+  if($text != '')
+  {
+    $where = " (pps.productName LIKE '%$text%' or  pps.productCode LIKE '%$text%' or pps.productDescription LIKE '%$text%' or pps.productCategory LIKE  '%$text%') ";
+    $this->db->where($where);
+  }
+
+  if($LoggedIn !='' && $LoggedIn !='all')
+  {
+    $this->db->where('ps.productClass',$store->storeClass);
+  }
+
+  // if(!empty($dt))
+  // {
+  //   $this->db->where_in('pps.productCategory',$dt);
+  // }
+  $this->db->group_by('productID');
+  $result = $this->db->get();
+
+  $num_rows = $result->num_rows();
+  // echo $this->db->last_query();
+
+
+  // echo $this->db->last_query(); die;
+  $this->db->select('pps.*,cats.catName');
+  $this->db->from('pps_products as pps');
+
+  if($LoggedIn !='' && $LoggedIn !='all')
+  $this->db->join('pps_products_classes as ps','pps.productID = ps.productID');
+
+  $this->db->join('pps_cats as cats','cats.catId = pps.productCategory','left');
+  if($cat !='' && $cat !='all')
+  $this->db->where('pps.productCategory',$cat);
+  if($store == true)
+  $this->db->where('pps.IsActive',1);
+  $this->db->where('pps.rad_visible',1);
+  $this->db->where('pps.is_visible',1);
 
   if($text != '')
   {
@@ -2256,8 +2719,40 @@ public Function getUnAssignedStores($key,$apdm)
   $result2 = $result->result();
   return $result2;
 }
+public Function getUnAssignedRegionStores($key,$apdm)
+{
+  //$result = $this->db->query("SELECT str.* FROM pps_store as str WHERE str.storeId not in( SELECT store_id from pps_region_store )");
+  $result = $this->db->query("SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '$apdm' )");
+  //echo $this->db->last_query(); die;
 
+  //SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '5')
+  //$result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+public Function getUnAssignedRegions($key,$apdm)
+{
+    $result = $this->db->query("SELECT region.id,region.regionName as storeName, regionEmail as storeEmail, regionPhone as storeMobile  FROM pps_region as region WHERE region.id not in( SELECT region_id from pps_apdmAssign_region where apdm_id = $apdm) and region.regionName like '%$key%'");
+ // $result = $this->db->query("SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '$apdm' )");
+  //echo $this->db->last_query(); die;
 
+  //SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '5')
+  //$result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+
+public Function getUnAssignedExRegions($key,$apdm)
+{
+  $result = $this->db->query("SELECT region.id,region.regionName as storeName, regionEmail as storeEmail, regionPhone as storeMobile  FROM pps_region as region WHERE region.id not in( SELECT region_id from pps_exaplAssign_region where apdm_id = $apdm) and region.regionName like '%$key%'");
+ // $result = $this->db->query("SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '$apdm' )");
+  //echo $this->db->last_query(); die;
+
+  //SELECT * FROM  pps_store where storeId Not In (select storeId from pps_apdm_assigns where apdmID = '5')
+  //$result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
 public function getUnAssignedStoresExApl($key,$apdm)
 {
   $result = $this->db->query("SELECT str.* FROM pps_store as str WHERE str.storeId not in ( SELECT storeId from pps_exapl_assigns where apdmID = '$apdm' ) and str.storeName like '%$key%'");
@@ -2279,9 +2774,59 @@ public function getAssignes($apdm)
   $this->db->where('asgn.apdmID',$apdm);
   $result = $this->db->get();
   $result2 = $result->result();
+  $resultData = [];
+  foreach ($result2 as $key => $resultDet) {
+    $this->db->select('str.id');
+    $this->db->from('pps_region_store as str');
+    $this->db->join('pps_apdmAssign_region as region','region.region_id = str.region_id','inner');
+    $this->db->where('region.apdm_id',$apdm);
+    $result = $this->db->get();
+    $checkStore = $result->row_array();
+    if(!$checkStore)
+    {
+      $resultDet->isRegion = false;
+    }
+    else
+    {
+      $resultDet->isRegion = true;
+    }
+    $resultData[] = $resultDet;
+  }
+  return $resultData;
+}
+public function getAssignesRegionStore($apdm)
+{
+  $this->db->select('asgn.*,str.storeName');
+  $this->db->from('pps_region_store as asgn');
+  $this->db->join('pps_store as str','str.storeId = asgn.store_id','left');
+  $this->db->where('asgn.region_id',$apdm);
+  $result = $this->db->get();
+  $result2 = $result->result();
   return $result2;
 }
 
+public function getRegionsAssignes($apdm)
+{
+  $this->db->select('asgn.*,region.regionName');
+  $this->db->from('pps_apdmAssign_region as asgn');
+  $this->db->join('pps_region as region','region.id = asgn.region_id','inner');
+  $this->db->where('asgn.apdm_id',$apdm);
+  $result = $this->db->get();
+//echo $this->db->last_query();die;
+  $result2 = $result->result();
+  return $result2;
+}
+public function getExRegionsAssignes($apdm)
+{
+  $this->db->select('asgn.*,region.regionName');
+  $this->db->from('pps_exaplAssign_region as asgn');
+  $this->db->join('pps_region as region','region.id = asgn.region_id','inner');
+  $this->db->where('asgn.apdm_id',$apdm);
+  $result = $this->db->get();
+//echo $this->db->last_query();die;
+  $result2 = $result->result();
+  return $result2;
+}
 public function getExAplAssignes($apdm)
 {
   $this->db->select('asgn.*,str.storeName');
@@ -2290,18 +2835,39 @@ public function getExAplAssignes($apdm)
   $this->db->where('asgn.apdmID',$apdm);
   $result = $this->db->get();
   $result2 = $result->result();
-  return $result2;
+  $resultData = [];
+  foreach ($result2 as $key => $resultDet) {
+    $this->db->select('str.id');
+    $this->db->from('pps_region_store as str');
+    $this->db->join('pps_exaplAssign_region as region','region.region_id = str.region_id','inner');
+    $this->db->where('region.apdm_id',$apdm);
+    $result = $this->db->get();
+    $checkStore = $result->row_array();
+    if(!$checkStore)
+    {
+      $resultDet->isRegion = false;
+    }
+    else
+    {
+      $resultDet->isRegion = true;
+    }
+    $resultData[] = $resultDet;
+  }
+  return $resultData;
 }
 
 
 public function getapdmorders($apdm,$type,$text,$start,$perPage)
 {
-  $this->db->select('str.storeName,str.storeId,ordr.*');
+  $this->db->distinct();
+  $this->db->select('str.storeName,str.storeId,ordr.*, apl.apdmFirstName, apl.apdmLastName');
   $this->db->from('pps_apdm_assigns as asgn');
   $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
   $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
 
-  $this->db->where('asgn.apdmID',$apdm);
+  //$this->db->where('asgn.apdmID',$apdm);
+  $this->db->where('apl.apdmID',$apdm);
   $this->db->where('ordr.orderNumber !=',NULL);
   if($type == 'my')
   {
@@ -2332,12 +2898,16 @@ public function getapdmorders($apdm,$type,$text,$start,$perPage)
 
 public function getexaplorders($apdm,$type,$text,$start,$perPage)
 {
-  $this->db->select('str.storeName,str.storeId,ordr.*');
+  $this->db->distinct();
+  $this->db->select('str.storeName,str.storeId,ordr.*, exapl.apdmFirstName as apdmFirstName2 , exapl.apdmLastName as apdmLastName2');
   $this->db->from('pps_exapl_assigns as asgn');
   $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
   $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
+  // $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
 
-  $this->db->where('asgn.apdmID',$apdm);
+  //$this->db->where('asgn.apdmID',$apdm);
+  $this->db->where('exapl.apdmID',$apdm);
   $this->db->where('ordr.orderNumber !=',NULL);
 
   if($type == 'my')
@@ -2398,250 +2968,173 @@ public function getexaplstoreorders($apdm,$type,$text,$start,$perPage)
   $result2 = $result->result();
   return array('data' => $result2, 'total' => $num_results);
 }
-
-public function getAdminApdmOrders($text,$start,$perPage)
+public function getAllAdminApdmOrders($text,$start,$perPage)
 {
-  // $this->db->select('str.storeName,str.storeId,ordr.*,dst.*');
-  // $this->db->from('pps_orders as ordr');
-  // $this->db->join('pps_store as str','ordr.orderUserId = str.storeUserId','inner');
-  // $this->db->join('pps_distributor as dst','dst.apdmID = ordr.orderAddedBy.','inner');
-  // $this->db->where('ordr.orderNumber !=',NULL);
-  // $this->db->where('ordr.orderLevel',1);
-  // $this->db->order_by('ordr.orderAddedOn','desc');
-  // $result = $this->db->get();
-  // $result2 = $result->result();
-  // return $result2;
+  $this->db->select('ordr.orderId');
+  $this->db->from('pps_orders as ordr');
 
-  $this->db->select('str.storeName,str.storeId,ordr.*');
+  // $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  // $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  // $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  // $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+
+  $this->db->where('ordr.orderNumber !=',NULL);
+  // if($text != 'all')
+  // {
+  //   $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+  //   $this->db->where($where);
+  // }
+  $this->db->order_by('ordr.orderAddedOn','desc');
+  $db_results = $this->db->get();
+
+  $results = $db_results->result();
+  $num_results = $db_results->num_rows();
+
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
   $this->db->from('pps_orders as ordr');
   $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
   $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  if($text != 'all')
+  {
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $this->db->where($where);
+  }
+  $this->db->order_by('ordr.orderAddedOn','desc');
+  $this->db->limit($perPage, $start);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  $orders = array();
+
+  return array('data' => $result2, 'total' => $num_results);
+
+}
+public function getAdminApdmOrders($text,$start,$perPage)
+{
+  $this->db->select('ordr.orderId');
+
+  // $this->db->from('pps_orders as ordr');
+  // $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  // $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  // $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  // $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+
   $this->db->where('ordr.orderNumber !=',NULL);
   $this->db->where('ordr.orderLevel != ',2);
   // if($text != 'all')
   // {
-  //   $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+  //   $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
   //   $this->db->where($where);
   // }
   $this->db->order_by('ordr.orderAddedOn','desc');
-  $tempdb = clone $this->db;
-  $num_results = $tempdb->count_all_results();
-  $this->db->limit($perPage, $start);
-  $result = $this->db->get();
-  $result2 = $result->result();
-  $orders = array();
-  foreach ($result2 as $key => $value)
-  {
-    if($value->orderLevel == 1)
-    {
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_apdm_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
+  $db_results = $this->db->get();
 
-      $this->db->select('*');
-      $this->db->from('pps_distributor');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
+  $results = $db_results->result();
+  $num_results = $db_results->num_rows();
 
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-
-      if($text != 'all')
-      {
-        if($this->searchStr($result2[$key]->apdmFirstName,$text) || $this->searchStr($result2[$key]->apdmLastName,$text) || $this->searchStr($result2[$key]->storeName,$text))
-        {
-          $orders[] = $result2[$key];
-        }
-      }
-      else
-      {
-        $orders[] = $result2[$key];
-      }
-    }
-
-    else if($value->orderLevel == 3)
-    {
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_exapl_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_exapl as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
-      $this->db->select('*');
-      $this->db->from('pps_exapl');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-      if($text != 'all')
-      {
-        if($this->searchStr($result2[$key]->apdmFirstName,$text) || $this->searchStr($result2[$key]->apdmLastName,$text) || $this->searchStr($result2[$key]->storeName,$text))
-        {
-          $orders[] = $result2[$key];
-        }
-      }
-      else
-      {
-        $orders[] = $result2[$key];
-      }
-    }
-  }
-  return array('data' => $orders, 'total' => $num_results);
-
-  // $this->db->select('str.storeName,str.storeId,ordr.*,dst.*');
-  // $this->db->from('pps_apdm_assigns as asgn');
-  // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-  // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-  // $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
-  // $this->db->where('ordr.orderNumber !=',NULL);
-  // $this->db->where('ordr.orderLevel',1);
-  //
-  // if($text != 'all')
-  // {
-  //   $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or dst.apdmFirstName LIKE '%$text%' or dst.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
-  //   $this->db->where($where);
-  // }
-  // $this->db->order_by('ordr.orderAddedOn','desc');
-  // $result = $this->db->get();
-  // $result2 = $result->result();
-  // return $result2;
-}
-
-public function getAdminApprovedOrders($text,$start,$perPage)
-{
-  $this->db->select('str.storeName,str.storeId,ordr.*');
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
   $this->db->from('pps_orders as ordr');
   $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
   $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
   $this->db->where('ordr.orderNumber !=',NULL);
-  $this->db->where('ordr.orderStatus',1);
+  $this->db->where('ordr.orderLevel != ',2);
+  if($text != 'all')
+  {
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $this->db->where($where);
+  }
   $this->db->order_by('ordr.orderAddedOn','desc');
-  $tempdb = clone $this->db;
-  $num_results = $tempdb->count_all_results();
   $this->db->limit($perPage, $start);
   $result = $this->db->get();
   $result2 = $result->result();
   $orders = array();
-  foreach ($result2 as $key => $value)
+
+  return array('data' => $result2, 'total' => $num_results);
+
+}
+
+public function getAdminApprovedOrders($text,$start,$perPage,$st)
+{
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  if($text != 'all')
   {
-    if($value->orderLevel == 1)
-    {
-      // echo "<br>";
-      // echo "one<br>";
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_apdm_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
-      $this->db->select('*');
-      $this->db->from('pps_distributor');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-
-      if($text != 'all')
-      {
-        // echo $result2[$key]->apdmFirstName;
-        // echo "<br>";
-        // echo $text;
-        // echo "<br>";
-        // echo stripos($result2[$key]->apdmFirstName,$text);
-        // echo "<br>";
-        // echo stripos($result2[$key]->apdmLastName,$text);
-        // echo "<br>";
-        // echo stripos($result2[$key]->storeName,$text);
-        if($this->searchStr($result2[$key]->apdmFirstName,$text) || $this->searchStr($result2[$key]->apdmLastName,$text) || $this->searchStr($result2[$key]->storeName,$text))
-        {
-          $orders[] = $result2[$key];
-        }
-      }
-      else
-      {
-        $orders[] = $result2[$key];
-      }
-    }
-
-    else if($value->orderLevel == 2)
-    {
-      // echo "two <br>";
-      if($text != 'all')
-      {
-        if($this->searchStr($result2[$key]->apdmFirstName,$text) || $this->searchStr($result2[$key]->apdmLastName,$text) || $this->searchStr($result2[$key]->storeName,$text))
-        {
-          // print_r($result2[$key]);
-          // echo "<br>";
-          // echo stripos($result2[$key]->apdmFirstName,$text);
-          // echo "<br>";
-          // echo stripos($result2[$key]->apdmLastName,$text);
-          // echo "<br>";
-          // echo stripos($result2[$key]->storeName,$text);
-          $orders[] = $result2[$key];
-        }
-      }
-      else
-      {
-        $orders[] = $result2[$key];
-      }
-    }
-
-    else if($value->orderLevel == 3)
-    {
-      // echo "three <br>";
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_exapl_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_exapl as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
-      $this->db->select('*');
-      $this->db->from('pps_exapl');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-      if($text != 'all')
-      {
-        if($this->searchStr($result2[$key]->apdmFirstName,$text) || $this->searchStr($result2[$key]->apdmLastName,$text) || $this->searchStr($result2[$key]->storeName,$text))
-        {
-          // print_r($result2[$key]);
-          // echo "<br>";
-          // echo stripos($result2[$key]->apdmFirstName,$text);
-          // echo "<br>";
-          // echo stripos($result2[$key]->apdmLastName,$text);
-          // echo "<br>";
-          // echo stripos($result2[$key]->storeName,$text);
-          $orders[] = $result2[$key];
-        }
-      }
-      else
-      {
-        $orders[] = $result2[$key];
-      }
-    }
+    // $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or exapl.apdmFirstName2 LIKE '%$text%' or exapl.apdmLastName2 LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $this->db->where($where);
   }
+  if($st == 'shipped')
+  $this->db->where('ordr.orderTrackNumber !=','');
+  else if($st == 'printed')
+  $this->db->where('ordr.printed',1);
+  else if($st == 'all')
+  {
+    $this->db->where('ordr.orderStatus >=',1);
+    $this->db->where('ordr.orderStatus !=',9);
+    $this->db->where('ordr.orderStatus !=',10);
+    $this->db->where('ordr.orderStatus !=',2);
+  }
+  else if($st != '' && $st != null)
+  $this->db->where('ordr.orderStatus',$st);
+  else
+  $this->db->where('ordr.orderStatus',1);
+  $this->db->order_by('ordr.orderAddedOn','desc');
+  // $tempdb = clone $this->db;
+  // $num_results = $tempdb->count_all_results();
+  // $num_results = $this->db->count_all_results();
+  $db_results = $this->db->get();
+
+  $results = $db_results->result();
+  $num_results = $db_results->num_rows();
+
+
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  if($text != 'all')
+  {
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $this->db->where($where);
+  }
+  if($st == 'shipped')
+  $this->db->where('ordr.orderTrackNumber !=','');
+  else if($st == 'printed')
+  $this->db->where('ordr.printed',1);
+  else if($st == 'denied')
+  $this->db->where('ordr.orderStatus',2);
+  else if($st == 'all')
+  {
+    $this->db->where('ordr.orderStatus >=',1);
+    $this->db->where('ordr.orderStatus !=',9);
+    $this->db->where('ordr.orderStatus !=',10);
+    $this->db->where('ordr.orderStatus !=',2);
+  }
+  else if($st != '' && $st != null)
+  $this->db->where('ordr.orderStatus',$st);
+  else
+  $this->db->where('ordr.orderStatus',1);
+  $this->db->order_by('ordr.orderAddedOn','desc');
+  $this->db->limit($perPage, $start);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  // echo "<pre>";
+  // echo $this->db->last_query();
+  // print_r($result2);
   // die;
-  return array('data' => $orders, 'total' => $num_results);
+  return array('data' => $result2, 'total' => $num_results);
 
 
 
@@ -2678,96 +3171,49 @@ public function getAdminApprovedOrders($text,$start,$perPage)
 public function getAdminPendingOrders($text,$start,$perPage)
 {
 
-  $this->db->select('str.storeName,str.storeId,ordr.*');
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
   $this->db->from('pps_orders as ordr');
   $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
   $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
   $this->db->where('ordr.orderNumber !=',NULL);
   $this->db->where('ordr.orderStatus',0);
   if($text != 'all')
   {
-    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    // $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
     $this->db->where($where);
   }
   $this->db->order_by('ordr.orderAddedOn','desc');
-  $tempdb = clone $this->db;
-  $num_results = $tempdb->count_all_results();
+  $db_results = $this->db->get();
+
+  $results = $db_results->result();
+  $num_results = $db_results->num_rows();
+
+
+
+  $this->db->select('str.storeName,str.storeId,ordr.*,ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  $this->db->where('ordr.orderStatus',0);
+  if($text != 'all')
+  {
+    // $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or apl.apdmFirstName LIKE '%$text%' or apl.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
+    $this->db->where($where);
+  }
+  $this->db->order_by('ordr.orderAddedOn','desc');
   $this->db->limit($perPage, $start);
   $result = $this->db->get();
   $result2 = $result->result();
-  foreach ($result2 as $key => $value)
-  {
-    if($value->orderLevel == 1)
-    {
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_apdm_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
-      $this->db->select('*');
-      $this->db->from('pps_distributor');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-    }
 
-    else if($value->orderLevel == 3)
-    {
-      // $this->db->select('dst.*');
-      // $this->db->from('pps_exapl_assigns as asgn');
-      // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-      // $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
-      // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-      // $this->db->join('pps_exapl as dst','asgn.apdmID = dst.apdmID','inner');
-      // $this->db->where('ordr.orderNumber',$value->orderNumber);
-      // $row = $this->db->get();
-      // $row2 = $row->row();
-
-      $this->db->select('*');
-      $this->db->from('pps_exapl');
-      $this->db->where('apdmUserId',$value->orderAddedBy);
-      $row = $this->db->get();
-      $row2 = $row->row();
-      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
-      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
-    }
-  }
   return array('data' => $result2, 'total' => $num_results);
 
-
-  // $this->db->select('str.storeName,str.storeId,ordr.*,dst.*');
-  // $this->db->from('pps_apdm_assigns as asgn');
-  // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
-  // $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
-  // $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
-  // $this->db->where('ordr.orderNumber !=',NULL);
-  // $this->db->where('ordr.orderStatus',0);
-  // if($text != 'all')
-  // {
-  //   $where = "(str.storeName LIKE '%$text%' or  str.storeId LIKE '%$text%' or dst.apdmFirstName LIKE '%$text%' or dst.apdmLastName LIKE '%$text%' or ordr.orderNumber LIKE '%$text%' )";
-  //   $this->db->where($where);
-  // }
-  // $this->db->order_by('ordr.orderAddedOn','desc');
-  // $result = $this->db->get();
-  // $result2 = $result->result();
-  // return $result2;
-
-
-  // $this->db->select('str.storeName,str.storeId,ordr.*');
-  // $this->db->from('pps_orders as ordr');
-  // $this->db->join('pps_store as str','ordr.orderUserId = str.storeUserId','inner');
-  // $this->db->where('ordr.orderNumber !=',NULL);
-  // $this->db->where('ordr.orderStatus',0);
-  // $this->db->order_by('ordr.orderAddedOn','desc');
-  // $result = $this->db->get();
-  // $result2 = $result->result();
-  // return $result2;
 }
 
 public function getAdpmStores($apdm)
@@ -2776,8 +3222,26 @@ public function getAdpmStores($apdm)
   $this->db->from('pps_apdm_assigns as asgn');
   $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
   $this->db->where('asgn.apdmID',$apdm);
+
+  // $this->db->select('asgn.region_id');
+  // $this->db->from('pps_apdmAssign_region as asgn');
+
+  // $this->db->where('asgn.apdm_id',$apdm);
+  // $result = $this->db->get();
+
+  // $resultData = $result->result_array();
+  // $resultDataVal = [];
+  // foreach ($resultData as $key => $resultDatas) {
+  //   $resultDataVal[] = $resultDatas['region_id'];
+  // }
+  // $resultDataValue = implode(',',$resultDataVal);
+  // $this->db->select('str.*');
+  // $this->db->from('pps_region_store as asgn');
+  // $this->db->join('pps_store as str','str.storeId = asgn.store_id','left');
+  // $this->db->where_in( 'asgn.region_id',"$resultDataValue");
   $result = $this->db->get();
-  $result2 = $result->result();
+
+  $result2 = $result->result_array();
   return $result2;
 }
 
@@ -2790,6 +3254,28 @@ public function getExAplStores($apl)
   $result = $this->db->get();
   $result2 = $result->result();
   return $result2;
+
+
+  // $this->db->select('asgn.region_id');
+  // $this->db->from('pps_exaplAssign_region as asgn');
+  // $this->db->where('asgn.apdm_id',$apl);
+  // $result = $this->db->get();
+
+  // $resultData = $result->result_array();
+  // $resultDataVal = [];
+  // foreach ($resultData as $key => $resultDatas) {
+  //   $resultDataVal[] = $resultDatas['region_id'];
+  // }
+  // $resultDataValue = implode(',',$resultDataVal);
+  // $this->db->select('str.*');
+  // $this->db->from('pps_region_store as asgn');
+  // $this->db->join('pps_store as str','str.storeId = asgn.store_id','left');
+  // $this->db->where_in( 'asgn.region_id',"$resultDataValue");
+  // $result = $this->db->get();
+
+  // $result2 = $result->result_array();
+  //echo $this->db->last_query();die;
+  //return $result2;
 }
 
 
@@ -2898,7 +3384,9 @@ public function parentChildCatNested()
 {
 	$cats_childs = array();
 	$this->db->select('catId as id, catParent, catName as name');
+  $this->db->where('rad_visible',1);
 	$query =  $this->db->get('pps_cats');
+  //echo $this->db->last_query();die;
 	$result   = array();
 	if($query->num_rows() > 0)
 	{
@@ -2925,11 +3413,12 @@ public function buildCatTree(array $elements, $parentId = 0) {
 
 public function AplandStorewithOrderNumber($order)
 {
-  $this->db->select('dst.*,str.*,usr.userEmail');
+  $this->db->select('dst.*,str.*,usr.userEmail,userDevDet.notficationStatus,userDevDet.deviceId,userDevDet.deviceType');
   $this->db->from('pps_apdm_assigns as asgn');
   $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
   $this->db->join('pps_users as usr','usr.userId = str.storeUserId','left');
   $this->db->join('pps_orders as ordr','ordr.orderUserId = str.storeUserId','left');
+  $this->db->join('pps_users as userDevDet','userDevDet.userId = ordr.orderAddedBy','left');
   $this->db->join('pps_distributor as dst','asgn.apdmID = dst.apdmID','inner');
   $this->db->where('ordr.orderNumber',$order);
   $result = $this->db->get();
@@ -2937,8 +3426,8 @@ public function AplandStorewithOrderNumber($order)
   return $result2;
 }
 
-public function AplandStorewithOrderNumber2($order)
-{
+//public function AplandStorewithOrderNumber2($order)
+//{
   // $this->db->select('dst.*,str.*,usr.userEmail');
   // $this->db->from('pps_apdm_assigns as asgn');
   // $this->db->join('pps_store as str','str.storeId = asgn.storeId','left');
@@ -2949,7 +3438,7 @@ public function AplandStorewithOrderNumber2($order)
   // $result = $this->db->get();
   // $result2 = $result->row();
   // return $result2;
-}
+//}
 
 
 public function findOrderTotalFromItems($id)
@@ -2962,6 +3451,299 @@ public function findOrderTotalFromItems($id)
   if($result2)
   return $result2->orderTotal;
 }
+
+public function exportReports($data)
+{
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+
+        $val = '';
+
+        $this->db->select('items.*,pps.productName as orderproductName,ordr.orderNumber, ordr.`orderLevel` as orderLevel, IF(orderLevel = 1, apl.apdmFirstName, NULL) as apdmFirstName, IF(orderLevel = 3, exapl.apdmFirstName, NULL) as apdmFirstName2, IF(orderLevel = 1, apl.apdmLastName, NULL) as apdmLastName, IF(orderLevel = 3, exapl.apdmLastName, NULL) as apdmLastName2,str.storeName,str.storeId');
+        $this->db->from('pps_orderitem as items');
+        $this->db->join('pps_products as pps','pps.productID = items.orderItemProductId','left');
+        $this->db->join('pps_orders as ordr','ordr.orderId = items.orderItemOrderId','left');
+        $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+        $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+        $this->db->join('pps_distributor as apl','apl.apdmUserId = ordr.orderAddedBy','left');
+        $this->db->join('pps_exapl as exapl','exapl.apdmUserId = ordr.orderAddedBy','left');
+        $this->db->where('ordr.orderNumber !=',NULL);
+        $this->db->where('ordr.orderStatus !=',2);
+        $this->db->where('ordr.orderStatus !=',10);
+        $this->db->where('ordr.orderStatus !=',0);
+        $this->db->order_by('ordr.orderAddedOn','desc');
+        if(!empty($data['from_date']) && !empty($data['to_date']))
+        {
+          $this->db->where('cast(ordr.orderAddedOn as Date) >',$data['from_date']);
+          $this->db->where('cast(ordr.orderAddedOn as Date) <',$data['to_date']);
+        }
+        if(!empty($data['apl']))
+        {
+          $this->db->where('ordr.orderAddedBy',$data['apl']);
+        }
+        if(!empty($data['store_id']))
+        {
+          $this->db->where('ordr.orderUserId',$data['store_id']);
+        }
+        $result11 = $this->db->get();
+        $result2 = $result11->result();
+        $itemData = [];
+        $i=1;
+        foreach ($result2 as $key => $value2)
+        {
+          $id = $value2->orderItemProductVarId;
+          if($id != null && $id != 0)
+          {
+            $this->db->select('productVarItemId,productVarDesc');
+            $this->db->from('pps_products_variations');
+            $this->db->where('productVarID',$id);
+            $result111 = $this->db->get();
+            $result111 = $result111->row();
+            if(!empty($result111))
+            {
+              // echo $key;
+              $value2->productVarItemId = $result111->productVarItemId;
+              if($result111->productVarDesc != null && $result111->productVarDesc != '')
+              $value2->orderproductName   = $result111->productVarDesc;
+              $value2->productVarDesc   = $result111->productVarDesc;
+            }
+          }
+          $val = [];
+          if($key != 0)
+          {
+            $key2 = $key-1;
+            if($result2[$key2]->orderNumber == $result2[$key]->orderNumber)
+            {
+              $val['orderNumber'] = '';
+            }
+            else
+            {
+              $val['orderNumber'] = $value2->orderNumber;
+            }
+          }
+          else
+          {
+            $val['orderNumber'] = $value2->orderNumber;
+          }
+          $val['apdl'] = $value2->apdmFirstName2.' '.$value2->apdmLastName2;
+          $val['store'] = $value2->storeName;
+          $val['product'] = $value2->productVarItemId_safe.'-'.$value2->productVarDesc_safe;
+          $val['qty'] = $value2->orderItemQty;
+          $val['amount'] = $value2->orderItemPrice;
+          $itemData[] = $val;
+          $i++;
+        }
+      //  $value->itemData = $itemData;
+      return $itemData;
+}
+public function exportProducts()
+{
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+
+        $val = '';
+
+        $this->db->select('pps.productID,pps.productName, pps_var.productVarDesc');
+        $this->db->from('pps_products_variations as pps_var');
+        $this->db->join('pps_products as pps','pps.productID = pps_var.productID','inner');
+
+        $result11 = $this->db->get();
+        $result2 = $result11->result();
+        $itemData = [];
+        $i=1;
+        foreach ($result2 as $key => $value2)
+        {
+
+            $this->db->select('upc');
+            $this->db->from('pps_products_upcs');
+            $this->db->where('productID',$value2->productID);
+            $result111 = $this->db->get();
+            $result111 = $result111->result();
+            if(!empty($result111))
+            {
+              $upcRes = [];
+              foreach ($result111 as $key => $upcDet) {
+                  $upcRes[] = $upcDet->upc;
+              }
+              $upcs = implode(',',$upcRes);
+              $value2->upc = "'".$upcs."'";
+            }
+            else
+            {
+              $value2->upc = '';
+            }
+            unset($value2->productID);
+            $itemData[] = $value2;
+      }
+      return $itemData;
+}
+public function dashboardinfonew($type,$subtype = null,$str = null)
+{
+  $this->db->select('str.storeName,str.storeId,ordr.*');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_users as usr','usr.userId = ordr.orderUserId','left');
+  $this->db->join('pps_store as str','str.storeUserId = usr.userId','left');
+  if ($type == 'today')
+  {
+    $this->db->where('DATE(ordr.orderAddedOn)',"CURDATE()",FALSE);
+  }
+  else if ($type == 'week')
+  {
+    $this->db->where("MONTH (orderAddedOn) = MONTH(NOW()) and YEAR(orderAddedOn) = YEAR(NOW()) and WEEK(orderAddedOn) = WEEK(NOW())");
+  }
+  else if ($type == 'month')
+  {
+    $this->db->where("MONTH (orderAddedOn) = MONTH(NOW()) and YEAR(orderAddedOn) = YEAR(NOW())");
+  }
+  if($subtype && $subtype == 'stores' && !empty($str))
+  {
+    $this->db->where_in("ordr.orderUserId",$str);
+  }
+  else if($subtype && $subtype == 'apls' && !empty($str))
+  {
+    $this->db->where_in("ordr.orderAddedBy",$str);
+  }
+  else if($subtype && $subtype == 'products' && !empty($str))
+  {
+    $st = implode(',',$str);
+    // $this->db->where("ordr.orderId IN SELECT orderItemOrderId FROM pps_orderitem WHERE orderItemProductId in ('".implode("','",$str)."')" , NULL , false);
+    $this->db->where("ordr.orderId IN (SELECT orderItemOrderId FROM pps_orderitem WHERE orderItemProductId in ( $st ))" , NULL , false);
+  }
+  $this->db->where('ordr.orderNumber !=',NULL);
+  $this->db->where('ordr.orderStatus !=',0);
+  $this->db->order_by('ordr.orderAddedOn','desc');
+  $result = $this->db->get();
+  $result2 = $result->result();
+  // if($type == 'total')
+  // {
+  //   echo $this->db->last_query();
+  //   die;
+  // }
+  if($subtype && $subtype == 'apls' && !empty($str))
+  {
+    // echo $this->db->last_query();
+    // die;
+  }
+
+  foreach ($result2 as $key => $value)
+  {
+    if($value->orderLevel == 1)
+    {
+      $this->db->select('*');
+      $this->db->from('pps_distributor');
+      $this->db->where('apdmUserId',$value->orderAddedBy);
+      $row = $this->db->get();
+      $row2 = $row->row();
+      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
+      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
+    }
+
+    else if($value->orderLevel == 3)
+    {
+      $this->db->select('*');
+      $this->db->from('pps_exapl');
+      $this->db->where('apdmUserId',$value->orderAddedBy);
+      $row = $this->db->get();
+      $row2 = $row->row();
+      $result2[$key]->apdmFirstName = (isset($row2->apdmFirstName) ? $row2->apdmFirstName : '');
+      $result2[$key]->apdmLastName = (isset($row2->apdmLastName) ? $row2->apdmLastName : '');
+    }
+  }
+
+
+  return $result2;
+}
+
+public function dashboardSale()
+{
+  $this->db->select('item.*,ordr.orderTotal,ordr.orderAddedOn');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_orderitem as item','item.orderItemOrderId = ordr.orderId','inner');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  $this->db->where('ordr.orderStatus !=',0);
+  $this->db->where('ordr.orderStatus !=',9);
+  $this->db->where('ordr.orderStatus !=',10);
+  $whr = 'ordr.orderAddedOn >= now()-interval 5 month';
+  $this->db->where($whr);
+  // $this->db->group_by('ordr.templateSlug');
+  $this->db->order_by('orderAddedOn', 'ASC');
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+public function superDashboardSale()
+{
+  $this->db->select('item.*,ordr.orderTotal,ordr.orderAddedOn');
+  $this->db->from('pps_orders as ordr');
+  $this->db->join('pps_orderitem as item','item.orderItemOrderId = ordr.orderId','inner');
+  $this->db->where('ordr.orderNumber !=',NULL);
+  $this->db->where('ordr.orderStatus !=',0);
+  $this->db->where('ordr.orderStatus !=',9);
+  $this->db->where('ordr.orderStatus !=',10);
+  $whr = 'ordr.orderAddedOn BETWEEN subdate(curdate(),dayofweek(curdate())+6)
+and subdate(curdate(),dayofweek(curdate())-1)';
+  $this->db->where($whr);
+  // $this->db->group_by('ordr.templateSlug');
+  $this->db->order_by('orderAddedOn', 'ASC');
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+public function searchStores($text)
+{
+  $this->db->select('*');
+  $this->db->from('pps_store');
+  $where = "( storeName LIKE '%$text%')";
+  $this->db->where($where);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+
+public function searchProducts($text)
+{
+  $this->db->select('*');
+  $this->db->from('pps_products');
+  $where = "( productName LIKE '%$text%')";
+  $this->db->where($where);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+
+public function searchApls($text)
+{
+  $this->db->select('*');
+  $this->db->from('pps_distributor');
+  $where = "( apdmFirstName LIKE '%$text%' or apdmLastName LIKE '%$text%' )";
+  $this->db->where($where);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+
+public function searchOrders($apl,$text)
+{
+  $this->db->select('*');
+  $this->db->from('pps_orders');
+  $where = "( orderNumber LIKE '%$text%')";
+  $this->db->where($where);
+  $this->db->where('orderAddedBy',$apl);
+  $result = $this->db->get();
+  $result2 = $result->result();
+  return $result2;
+}
+
+public function totalOrder($user)
+{
+  $queryDd = $this->db->query("SELECT sum(`orderItemPrice`) as total FROM `pps_orders` as ordr join pps_orderitem as item on item.orderItemOrderId = ordr.orderid where ordr.orderAddedBy = $user");
+  $result = $queryDd->row();
+  return $result;
+}
+
+
 
 }
 ?>
